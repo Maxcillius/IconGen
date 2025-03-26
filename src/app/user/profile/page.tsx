@@ -81,7 +81,8 @@ export default function Profile() {
                                 {user?.firstname || ''} {user?.middlename || ''} {user?.lastname || ''}
                             </p>
                             ) : (
-                            <p className="text-lg font-medium">{user?.[field] || ''}</p>
+                                <p className="text-lg font-medium">{''}</p>
+                            // <p className="text-lg font-medium">{user?.[field] || ''}</p>
                             )}
                         </div>
                         )}
