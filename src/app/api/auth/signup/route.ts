@@ -4,6 +4,7 @@ import { signUp } from "@/utils/zod";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from '@/utils/firebaseClient';
 import { cookies } from "next/headers";
+import admin from "@/utils/firebaseAdmin";
 
 export async function POST(req: NextRequest) {
     const body = await req.json();
@@ -48,15 +49,19 @@ export async function POST(req: NextRequest) {
                 firstname: email.split("@")[0],
             },
             })
+            const idToken = await user.getIdToken()
+            const expiresIn = 60 * 60 * 24 * 30 // 1 month
             const cookieStore = await cookies()
+            const createCookie = await admin.auth().createSessionCookie( idToken, { expiresIn })
+            // console.log(createCookie)
             cookieStore.set({
                 name: 'sessionKey',
-                value: accessToken,
+                value: createCookie,
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
                 maxAge: 60 * 60 * 24 * 30 // 1 month
-        })
+            })
         })
         return NextResponse.json({
             success: 1,

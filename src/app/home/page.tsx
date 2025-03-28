@@ -2,38 +2,35 @@
 
 import { dall2, dall3 } from "../../interfaces/dimensions"
 import { useState } from "react"
-import Image from "next/image"
-import Styles from "../../components/Styles"
-import Popup from "../../components/Authpopup"
-import { useSelector } from "react-redux"
-import { RootState } from "../../state/store"
-import { useDispatch } from "react-redux"
-import { Download, Save } from 'lucide-react'
-import lock from "@/images/lock.png"
-import brain from "@/images/image.jpg"
+import { useSelector } from "react-redux";
+import { Crown, Download, Save, X, Trash2, Upload, Info, Sparkles, Lock } from 'lucide-react';
+import { RootState } from '@/state/store';
 
-export default function Homepage() {
-    const [quality, setQuality] = useState("standard")
-    const [dimension, setDimension] = useState("small")
-    const [prompt, setPrompt] = useState("")
-    const [error, setError] = useState("")
-    const [imageLink, setimageLink] = useState("")
-    const [saved, setSaved] = useState(false)
-    const [subspopup, setSubspopup] = useState(false)
-    const styleContent: string = useSelector((state: RootState) => {
-        return state.style.value
-    })
+export default function Home() {
+    const [quality, setQuality] = useState("standard");
+    const [dimension, setDimension] = useState("small");
+    const [prompt, setPrompt] = useState("");
+    const [error, setError] = useState("");
+    const [imageLink, setImageLink] = useState("");
+    const [saved, setSaved] = useState(false);
+    const [subspopup, setSubspopup] = useState(false);
+
     const subscription: number = useSelector((state: RootState) => {
         return state.subscription.value
     })
+
+    const styleContent: string = useSelector((state: RootState) => {
+        return state.style.value
+    })
+
     const generateIcon = async () => {
-        if(prompt == "") {
-            setError("Prompt can't be empty")
-            return
+        if (prompt === "") {
+            setError("Please enter a prompt to generate your icon");
+            return;
         }
-        // console.log(styleContent)
+        console.log(styleContent)
         // try {
-        //     await fetch("/api/icon/generate", 
+        //     await fetch("/api/icon/generate",
         //         {
         //             method: "POST",
         //             body: JSON.stringify({
@@ -48,7 +45,7 @@ export default function Homepage() {
         //     ).then(response => {
         //         return response.json()
         //     }).then(data => {
-        //         setimageLink(data.Images.data[0].url)
+        //         setImageLink(data.Images.data[0].url)
         //     })
         // } catch(error) {
         //     if (error instanceof Error) {
@@ -57,11 +54,12 @@ export default function Homepage() {
         //         console.log(error)
         //     }
         // }
-    }
+    };
+
     const handleSave = async (imageLink: string) => {
-        if(!saved) {
+        if (!saved) {
             try {
-                await fetch("/api/icon/save", 
+                await fetch("/api/icon/save",
                     {
                         method: "POST",
                         body: JSON.stringify({
@@ -74,272 +72,274 @@ export default function Homepage() {
                 ).then((res) => {
                     return res.json()
                 }).then(data => {
-                    if(!data.success) {
+                    if (!data.success) {
                         throw new Error(JSON.stringify(data.msg))
                     } else {
                         setSaved(true)
                     }
                 })
-            } catch(err) {
+            } catch (err) {
                 console.log(err)
             }
         }
     }
+
     return (
         <>
-            <div className="h-16 w-full"></div>
-            <section>
-                <div className="bg-gradient-to-b from-[#1A1E23] to-[#0F2133] min-h-screen w-full">
-                <div className="container mx-auto px-4 py-8">
-                    <div className="flex flex-col lg:flex-row gap-6">
-                    {/* Sidebar */}
-                    <div className="w-full lg:w-64">
-                        <div className="rounded-xl bg-[#0F1926] shadow-lg shadow-black/30 border border-[#1D3348] h-full">
-                        <div className="flex items-center justify-center p-4 rounded-t-xl bg-[#162435]">
-                            <h5 className="text-white font-semibold tracking-wide">Style Library</h5>
-                        </div>
-                        <div className="h-[calc(90vh-8rem)] mx-4 my-3 rounded-lg bg-[#1B263B] overflow-y-auto">
-                            <Styles />
-                        </div>
-                        </div>
-                    </div>
+            <div className='h-16 w-full'></div>
+            <div className="min-h-screen bg-[#0A0F16]">
+                {subspopup && <SubscriptionPopup close={setSubspopup} />}
 
-                    {/* Main Content */}
-                    <div className="flex-1">
-                        {/* Header */}
-                        <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center">
-                            <h1 className="text-3xl md:text-4xl text-white font-poppins font-bold">Icon Generator</h1>
-                            <span className="ml-3 px-3 py-1 bg-blue-500 text-xs text-white rounded-full">PRO</span>
-                        </div>
-                        </div>
-
-                        {/* Error Message */}
-                        {error != "" && (
-                        <div className="bg-red-900/30 border border-red-700 rounded-lg p-4 mb-6">
-                            <div className="text-red-400 font-medium flex items-center">
-                            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd"></path>
-                            </svg>
-                            {error}
-                            </div>
-                        </div>
-                        )}
-
-                        {/* Main Grid */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                        {/* Icon Preview */}
-                        <div className="lg:col-span-2 bg-[#0B1724] rounded-2xl border border-[#1D3348] shadow-lg shadow-black/20">
-                            <div className="p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-white text-xl font-medium">Preview</h2>
-                                <div className="flex gap-2">
-                                <button 
-                                    onClick={() => {
-                                    if(imageLink) handleSave(imageLink)
-                                    }}
-                                    className={`p-2 rounded-lg hover:cursor-pointer transition-all duration-200 ${saved ? "bg-[#204558]" : "bg-[#005887] hover:bg-[#0077B6]"}`}
-                                    title="Save current icon"
-                                >
-                                    <Save size={18} className="text-white" />
-                                </button>
-                                <button 
-                                    onClick={() => {
-                                    if(imageLink) window.open(imageLink, '_blank')
-                                    }}
-                                    className="p-2 bg-[#005887] hover:bg-[#0077B6] rounded-lg hover:cursor-pointer transition-all duration-200"
-                                    title="Download icon"
-                                >
-                                    <Download size={18} className="text-white" />
-                                </button>
+                {/* Main Content */}
+                <div className="container mx-auto px-4 py-12">
+                    <div className="flex flex-col lg:flex-row gap-8">
+                        {/* Left Panel - Style Library */}
+                        <div className="w-full lg:w-72">
+                            <div className="rounded-2xl bg-[#111827] border border-[#1F2937] overflow-hidden shadow-xl shadow-black/20">
+                                <div className="p-4 bg-gradient-to-r from-[#1E293B] to-[#1a1f2b] border-b border-[#1F2937]">
+                                    <h3 className="text-white font-semibold flex items-center gap-2">
+                                        <Sparkles size={18} className="text-blue-400" />
+                                        Style Library
+                                    </h3>
+                                </div>
+                                <div className="p-4 h-[calc(90vh-12rem)] overflow-y-auto">
+                                    {/* Style components would go here */}
                                 </div>
                             </div>
-                            <div className="bg-[#111E2D] rounded-xl border border-[#262F3D] p-4 flex items-center justify-center">
-                                <div className="w-64 h-64 bg-slate-700 rounded-full p-2 shadow-xl shadow-black/40">
-                                <Image 
-                                    src={imageLink ? imageLink : brain} 
-                                    alt="Generated icon preview"
-                                    width={512}
-                                    height={512}
-                                    className="rounded-full w-full h-full object-cover"
-                                />
-                                </div>
-                            </div>
-                            </div>
                         </div>
 
-                        {/* Settings Panel */}
-                        <div className="bg-[#0B1724] rounded-2xl border border-[#1D3348] shadow-lg shadow-black/20">
-                            <div className="p-6">
-                            <h2 className="text-white text-xl font-medium mb-4">Settings</h2>
-                            <div className="space-y-6">
-                                {/* Quality Setting */}
-                                <div>
-                                <p className="text-white text-sm font-medium mb-2">Quality</p>
-                                <div className="flex bg-[#1B263B] rounded-lg p-1 relative">
-                                    <p
-                                    onClick={() => {setQuality("standard")}}
-                                    className={`text-center py-2 px-4 rounded-md hover:bg-[#0077B6] cursor-pointer text-white w-full font-medium transition-colors ${quality === "standard" ? "bg-[#0077B6]" : ""}`}>
-                                        Standard
+                        {/* Right Panel - Main Content */}
+                        <div className="flex-1 space-y-6">
+                            {/* Header */}
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <h1 className="text-3xl text-white font-bold">Icon Generator</h1>
+                                    <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-indigo-500 text-xs font-medium text-white rounded-full shadow-lg shadow-blue-500/20">PRO</span>
+                                </div>
+                            </div>
+
+                            {/* Error Message */}
+                            {error && (
+                                <div className="bg-red-900/20 border border-red-800/50 rounded-xl p-4 animate-fade-in">
+                                    <p className="text-red-400 flex items-center gap-2">
+                                        <Info size={16} />
+                                        {error}
                                     </p>
-                                    <div onClick={() => {
-                                        if(subscription > 0) { setQuality("hd") }
-                                        else {
-                                            setSubspopup(true)
-                                        }
-                                    }} className={`group relative w-full rounded-md ${ subscription > 0 ? "hover:bg-[#0077B6]" : ""}`}>
-                                        <p
-                                            className={`${ subscription < 1 ? "group-hover:opacity-50" : ""} text-center py-2 px-3 rounded-md cursor-pointer text-white w-full font-medium transition-colors ${dimension === "large" ? "bg-[#0077B6]" : ""}`}>
-                                            Medium
-                                        </p>
-                                        {subscription < 1 && (
-                                            <div className={`absolute left-16 top-1/2 transform -translate-y-1/2 hover:cursor-pointer opacity-0 ${ subscription <= 1 ? "group-hover:opacity-100" : ""}`}>
-                                                <Image src={lock} height={15} width={15} alt="lock" className="h-auto" />
+                                </div>
+                            )}
+
+                            {/* Preview and Settings Grid */}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                {/* Preview Panel */}
+                                <div className="lg:col-span-2">
+                                    <div className="bg-[#111827] rounded-2xl border border-[#1F2937] shadow-xl shadow-black/20 overflow-hidden">
+                                        <div className="p-6">
+                                            <div className="flex items-center justify-between mb-6">
+                                                <h2 className="text-white font-medium flex items-center gap-2">
+                                                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                                    Preview
+                                                </h2>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => imageLink && handleSave(imageLink)}
+                                                        className={`p-2 rounded-lg transition-all duration-300 ${saved
+                                                                ? 'bg-green-500/20 text-green-400'
+                                                                : 'bg-[#1E293B] hover:bg-[#2D3B4F] text-gray-400 hover:text-white'
+                                                            }`}
+                                                    >
+                                                        <Save size={18} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => imageLink && window.open(imageLink, '_blank')}
+                                                        className="p-2 bg-[#1E293B] hover:bg-[#2D3B4F] rounded-lg transition-all duration-300 text-gray-400 hover:text-white"
+                                                    >
+                                                        <Download size={18} />
+                                                    </button>
+                                                </div>
                                             </div>
-                                        )}
-                                    </div>
-                                </div>
-                                </div>
-
-                                {/* Dimension Setting */}
-                                <div>
-                                <p className="text-white text-sm font-medium mb-2">Dimension</p>
-                                <div className="flex bg-[#1B263B] rounded-lg p-1">
-                                    {/* Small button */}
-                                    <div className="relative w-full">
-                                    <p
-                                        onClick={() => {
-                                        if(subscription > 0) { setDimension("small") }
-                                        else {
-                                            setSubspopup(true)
-                                        }
-                                        }}
-                                        className={`text-center py-2 px-3 rounded-md hover:bg-[#0077B6] cursor-pointer text-white w-full font-medium transition-colors ${dimension === "small" ? "bg-[#0077B6]" : ""}`}>
-                                        Small   
-                                    </p>
-                                    </div>
-
-                                    {/* Medium button */}
-                                    <div onClick={() => {
-                                        if(subscription > 0) { setDimension("medium") }
-                                        else {
-                                            setSubspopup(true)
-                                        }
-                                    }}
-                                    className={`group relative w-full rounded-md ${ subscription > 0 ? "hover:bg-[#0077B6]" : ""}`}>
-                                    <p
-                                        className={`${ subscription < 1 ? "group-hover:opacity-50" : ""} text-center py-2 px-3 rounded-md cursor-pointer text-white w-full font-medium transition-colors ${dimension === "large" ? "bg-[#0077B6]" : ""}`}>
-                                        Medium
-                                    </p>
-                                    {subscription < 1 && (
-                                        <div className={`absolute left-12 top-1/2 transform -translate-y-1/2 hover:cursor-pointer opacity-0 ${ subscription <= 1 ? "group-hover:opacity-100" : ""}`}>
-                                            <Image src={lock} height={15} width={15} alt="lock" className="h-auto" />
+                                            <div className="bg-[#0A0F16] rounded-xl border border-[#1F2937] p-8 flex items-center justify-center">
+                                                <div className="w-64 h-64 rounded-full bg-gradient-to-br from-[#1E293B] to-[#111827] p-1 shadow-2xl shadow-black/40">
+                                                    <div className="w-full h-full rounded-full bg-[#0A0F16] flex items-center justify-center">
+                                                        {imageLink ? (
+                                                            <img
+                                                                src={imageLink}
+                                                                alt="Generated icon"
+                                                                className="w-full h-full rounded-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            <div className="text-gray-600">
+                                                                {/* <Upload size={32} /> */}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    )}
                                     </div>
+                                </div>
 
-                                    {/* Large button */}
-                                    <div 
-                                    onClick={() => {
-                                        if(subscription > 1) { setDimension("large") }
-                                        else {
-                                            setSubspopup(true)
-                                        }
-                                    }}
-                                    className={`group relative w-full rounded-md ${ subscription >= 1 ? "hover:bg-[#0077B6]" : ""}`}>
-                                    <p
-                                        className={`${ subscription <= 1 ? "group-hover:opacity-50" : ""} text-center py-2 px-3 rounded-md cursor-pointer text-white w-full font-medium transition-colors ${dimension === "large" ? "bg-[#0077B6]" : ""}`}>
-                                        Large
-                                    </p>
-                                    {subscription <= 1 && (
-                                        <div className={`absolute left-12 top-1/2 transform -translate-y-1/2 hover:cursor-pointer opacity-0 ${ subscription <= 1 ? "group-hover:opacity-100" : ""}`}>
-                                            <Image src={lock} height={15} width={15} alt="lock" className="h-auto" />
+                                {/* Settings Panel */}
+                                <div className="bg-[#111827] rounded-2xl border border-[#1F2937] shadow-xl shadow-black/20 overflow-hidden">
+                                    <div className="p-6">
+                                        <h2 className="text-white font-medium flex items-center gap-2 mb-6">
+                                            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                            Settings
+                                        </h2>
+                                        <div className="space-y-6">
+                                            {/* Quality Setting */}
+                                            <div className="relative">
+                                                <label className="text-gray-400 text-sm font-medium mb-2 block">Quality</label>
+                                                <div className="grid grid-cols-2 gap-2 bg-[#0A0F16] p-1 rounded-lg">
+                                                    <button
+                                                        onClick={() => setQuality("standard")}
+                                                        className={`py-2 px-4 rounded-md transition-all duration-300 ${quality === "standard"
+                                                                ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20'
+                                                                : 'text-gray-400 hover:text-white'
+                                                            }`}
+                                                    >
+                                                        Standard
+                                                    </button>
+                                                    <div className="relative">
+                                                        <button
+                                                            onClick={() => setQuality("hd")}
+                                                            className={`w-full py-2 px-4 rounded-md transition-all duration-300 ${quality === "hd"
+                                                                    ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20'
+                                                                    : 'text-gray-400 hover:text-white'
+                                                                } ${subscription < 1 ? 'opacity-50' : ''}`}
+                                                        >
+                                                            HD
+                                                        </button>
+                                                        {subscription < 1 && (
+                                                            <div onClick={() => { setSubspopup(true) }} className="absolute inset-0 flex items-center justify-center hover:cursor-pointer">
+                                                                <Lock className="w-4 h-4 text-gray-400" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Dimension Setting */}
+                                            <div className="relative">
+                                                <label className="text-gray-400 text-sm font-medium mb-2 block">Dimension</label>
+                                                <div className="grid grid-cols-3 gap-2 bg-[#0A0F16] p-1 rounded-lg">
+                                                    {["small", "medium", "large"].map((size, index) => (
+                                                        <div key={size} className="relative">
+                                                            <button
+                                                                onClick={() => setDimension(size)}
+                                                                className={`w-full py-2 px-4 rounded-md capitalize transition-all duration-300 ${dimension === size
+                                                                        ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20'
+                                                                        : 'text-gray-400 hover:text-white'
+                                                                    } ${subscription < index ? 'opacity-50' : ''}`}
+                                                            >
+                                                                {size}
+                                                            </button>
+                                                            {subscription < index && (
+                                                                <div onClick={() => {setSubspopup(true)}} className="absolute inset-0 flex items-center justify-center">
+                                                                    <Lock className="w-4 h-4 text-gray-400" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* Generate Button */}
+                                            <button
+                                                onClick={generateIcon}
+                                                className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
+                                            >
+                                                <Sparkles size={18} />
+                                                Generate Icon
+                                            </button>
                                         </div>
-                                    )}
                                     </div>
                                 </div>
+                            </div>
+
+                            {/* Prompt Input */}
+                            <div className="bg-[#111827] rounded-2xl border border-[#1F2937] shadow-xl shadow-black/20 overflow-hidden">
+                                <div className="p-6">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="flex items-center gap-3">
+                                            <h2 className="text-white font-medium flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                                Prompt
+                                            </h2>
+                                            <span className="px-2 py-1 bg-[#1E293B] text-xs text-gray-400 rounded-md">Required</span>
+                                        </div>
+                                        <button
+                                            onClick={() => setPrompt("")}
+                                            className="p-2 text-gray-500 hover:text-gray-400 transition-colors duration-300"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                    <textarea
+                                        value={prompt}
+                                        onChange={(e) => setPrompt(e.target.value)}
+                                        placeholder="Describe your icon in detail (e.g., 'A modern tech logo with blue and purple gradient, minimalist style with abstract shapes')"
+                                        className="w-full h-32 bg-[#0A0F16] text-gray-300 placeholder-gray-600 rounded-xl border border-[#1F2937] p-4 focus:outline-none focus:border-blue-500 transition-all duration-300 resize-none"
+                                    />
+                                    <div className="mt-3 flex items-center justify-between text-sm">
+                                        <span className="text-gray-500">{prompt.length}/500 characters</span>
+                                        <span className="text-gray-500 flex items-center gap-1">
+                                            <Info size={14} />
+                                            Pro tip: Be specific about colors, style, and mood
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
-
-                            {/* Generate Button */}
-                            <button 
-                                onClick={() => {generateIcon()}} 
-                                className="mt-6 w-full text-center text-white bg-gradient-to-r from-[#0077B6] to-[#4891E5] py-3 rounded-xl cursor-pointer hover:opacity-90 font-bold transition-all duration-200 transform hover:scale-[1.02] flex items-center justify-center"
-                            >
-                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                </svg>
-                                Generate Icon
-                            </button>
-                            </div>
-                        </div>
-                        </div>
-
-                        {/* Prompt Input */}
-                        <div className="bg-[#0B1724] rounded-2xl border border-[#1D3348] shadow-lg shadow-black/20 mb-8">
-                        <div className="flex items-center justify-between p-5 border-b border-[#1D3348]">
-                            <div className="flex items-center">
-                            <span className="text-[#D1D1D1] font-semibold">Prompt</span>
-                            <div className="ml-3 px-2 py-1 bg-[#1B263B] rounded-md text-xs text-gray-400">Required</div>
-                            </div>
-                            <div className="flex items-center">
-                            <button className="bg-[#1B263B] hover:bg-[#243752] text-gray-400 p-2 rounded-md transition-colors">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
-                            <button className="bg-[#1B263B] hover:bg-[#243752] text-gray-400 p-2 rounded-md ml-2 transition-colors">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                                </svg>
-                            </button>
-                            </div>
-                        </div>
-                        <div className="p-5">
-                            <textarea 
-                            onChange={(e) => {setPrompt(e.target.value)}} 
-                            placeholder="Describe your icon in detail (e.g., 'A modern tech logo with blue and purple gradient, minimalist style with abstract shapes')"
-                            className="text-white p-4 rounded-xl w-full h-40 bg-[#1B263B] focus:outline-none resize-none border border-[#243752] focus:border-[#0077B6] transition-colors"
-                            ></textarea>
-                            <div className="flex flex-col md:flex-row justify-between mt-3 text-sm text-gray-400">
-                            <span>{prompt.length}/500 characters</span>
-                            <div className="flex items-center mt-2 md:mt-0">
-                                <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <span>Pro tip: Be specific about colors, style, and mood</span>
-                            </div>
-                            </div>
-                        </div>
                         </div>
                     </div>
-                    </div>
                 </div>
-                </div>
-                </section>
-            <section className="py-20 bg-gradient-to-t from-[#1A1E23] to-[#0F2133]">
-                <div className="w-full p-20">
-                    <h1 className="text-4xl text-slate-400 font-bold text-center p-10">Frequently Asked Questions</h1>
-                </div>
-                <div className="w-full p-20">
-                    <h6 className="text-4xl text-slate-400 font-bold text-center p-10">What is Icon Generator?</h6>
-                    <p className="px-20 text-slate-500">
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                    </p>
-                </div>
-                <div className="w-full p-20">
-                    <h6 className="text-4xl text-slate-400 font-bold text-center p-10">How to use?</h6>
-                    <p className="px-20 text-slate-500">
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                    </p>
-                </div>
-                <div className="w-full p-20">
-                    <h6 className="text-4xl text-slate-400 font-bold text-center p-10">Features included</h6>
-                    <p className="px-20 text-slate-500">
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                    </p>
-                </div>
-            </section>
+            </div>
         </>
-    )
+    );
+}
+
+function SubscriptionPopup({ close }: { close: React.Dispatch<React.SetStateAction<boolean>> }) {
+    return (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-[#111827] w-96 rounded-2xl border border-[#1F2937] shadow-2xl">
+                <div className="p-6">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg shadow-lg shadow-blue-500/20">
+                                <Crown size={20} className="text-white" />
+                            </div>
+                            <h2 className="text-xl font-bold text-white">Upgrade to Pro</h2>
+                        </div>
+                        <button
+                            onClick={() => close(false)}
+                            className="text-gray-500 hover:text-gray-400 transition-colors duration-300"
+                        >
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    <div className="space-y-6">
+                        <p className="text-gray-400">Unlock premium features and enhance your creative workflow!</p>
+
+                        <div className="bg-[#0A0F16] rounded-xl p-4 border border-[#1F2937]">
+                            <ul className="space-y-3">
+                                {['HD Quality Generation', 'Larger Dimensions', 'Priority Processing'].map((feature) => (
+                                    <li key={feature} className="flex items-center gap-3 text-gray-300">
+                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                                        {feature}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                            <span className="text-gray-500 text-sm">Starting at $9.99/mo</span>
+                            <button className="px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-500/20">
+                                Upgrade Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }

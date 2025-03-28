@@ -16,12 +16,12 @@ const measurementId = process.env.MEASUREMENT_ID
 
 const firebaseConfig = {
   apiKey: "AIzaSyBMl-z1fyMDksyJbZefONPZ1mhPCWsP0aI",
-  authDomain,
-  projectId,
-  storageBucket,
-  messagingSenderId,
-  appId,
-  measurementId
+  authDomain: "icongenerator-3b3b4.firebaseapp.com",
+  projectId: "icongenerator-f0f28",
+  storageBucket: "icongenerator-f0f28.firebasestorage.app",
+  messagingSenderId: "209076786201",
+  appId: "1:209076786201:web:a34bbf1192f7673b514688",
+  measurementId: "G-Q6259D0ZFC"
 }
 
 const app = initializeApp(firebaseConfig);
