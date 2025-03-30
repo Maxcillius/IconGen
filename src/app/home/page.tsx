@@ -8,6 +8,7 @@ import { RootState } from "@/state/store";
 import { useDispatch } from "react-redux";
 import { setPopupState } from "@/state/popup/popup";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
     const [quality, setQuality] = useState("standard");
@@ -38,7 +39,7 @@ export default function Home() {
             setError("Please enter a prompt to generate your icon");
             return;
         }
-        console.log(styleContent)
+        // console.log(styleContent)
         // try {
         //     await fetch("/api/icon/generate",
         //         {
@@ -64,7 +65,7 @@ export default function Home() {
         //         console.log(error)
         //     }
         // }
-    };
+    }
 
     const handleSave = async (imageLink: string) => {
         if (!saved) {
@@ -342,10 +343,10 @@ function SubscriptionPopup({ close }: { close: React.Dispatch<React.SetStateActi
                         </div>
 
                         <div className="flex items-center justify-between">
-                            <span className="text-gray-500 text-sm">Starting at $9.99/mo</span>
-                            <button className="px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-500/20">
+                            <span className="text-gray-500 text-sm">Starting at $4.59/mo</span>
+                            <Link href={"/pricing"} className="px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-500/20">
                                 Upgrade Now
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

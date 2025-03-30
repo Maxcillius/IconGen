@@ -120,7 +120,7 @@ export default function App() {
             <p className="text-xl text-slate-400 mb-8">
               Join thousands of creators who trust our platform for their icon needs.
             </p>
-            <Link href={"/home"} className="px-8 py-3 bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition flex items-center gap-2 mx-auto">
+            <Link href={"/home"} className="px-8 py-3 flex-row justify-center bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition flex items-center gap-2 mx-auto">
               Get Started Now <ArrowRight className="h-5 w-5" />
             </Link>
           </div>

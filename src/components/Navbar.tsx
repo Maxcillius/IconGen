@@ -32,9 +32,12 @@ export default function Navbar() {
     const navItems = [
       { name: "Home", href: "/home", current: section === "home" ? true : false },
       { name: "Pricing", href: "/pricing", current: section === "pricing" ? true : false },
-    ];
+    ]
 
     const checkSession = async () => {
+        if(userInfo.uid) {
+          return
+        }
         try {
             await fetch("/api/user/profile", 
                 {
@@ -45,7 +48,7 @@ export default function Navbar() {
                 if(!response.ok) throw new Error("Error")
                 return response.json()
             }).then(data => {
-                console.log(data)
+                // console.log(data)
                 if(!data.success) {
                   return
                 }
@@ -69,7 +72,7 @@ export default function Navbar() {
 
     useEffect(() => {
         checkSession()
-    }, [userInfo.uid])
+    }, [])
 
     return (
         <>

@@ -2,17 +2,33 @@
 
 import { redirect } from "next/navigation"
 import { useEffect, useState } from "react"
-import ProfileData from "@/types/profileData"
 import { CreditCard, Settings, User, Shield, Image, ChevronRight, LogOut } from "lucide-react"
-import AccountData from "@/types/accountData"
+import dp from '@/images/dp.jpg'
+import { useSelector } from "react-redux"
+import { RootState } from "@/state/store"
+import { useRouter } from "next/navigation"
+import { setUserInfoState } from "@/state/userData/userData"
+import { useDispatch } from "react-redux"
+// import { auth } from "@/utils/firebaseClient"
+// import { signOut } from "firebase/auth"
 
 export default function Profile() {
 
-    const [user, setUser] = useState<ProfileData>()
-    const [account, setAccount] = useState<AccountData>()
+    const router = useRouter()
     const [icons, setIcons] = useState<{key: string, url: string}[]>([])
-    const [isLoading, setIsLoading] = useState(!user)
     const [activeSection, setActiveSection] = useState("profile")
+    const [isEdit, setEdit] = useState(false)
+    const [newUsername, setUsername] = useState("")
+    const [newName, setName] = useState("")
+    const [changing, setChanging] = useState(false)
+
+    const userInfo = useSelector((state: RootState) => {
+        return state.userInfo.value      
+    })
+
+    const updateUserInfo = useDispatch()
+
+    const [isLoading, setIsLoading] = useState(!userInfo)
 
     const fetchIcons = async () => {
         await fetch("/api/icon/fetch", 
@@ -40,52 +56,32 @@ export default function Profile() {
         })
     }
 
-    const getData = async () => {
+
+    const updateData = async () => { 
         try {
-            await fetch("/api/user/profile", 
+            setChanging(true)
+            await fetch("/api/user/action/update", 
                 {
-                    method: "GET",
+                    method: "POST",
                     headers: 
                     {
                         "Content-Type": "application/json"
-                    }
+                    },
+                    body: JSON.stringify({
+                        username: newUsername,
+                        name: newName,
+                        email: userInfo.email
+                    })
                 }
             ).then(response => {
                 if(!response.ok) throw new Error(JSON.stringify(response.text))
                 return response.json()
             }).then(data => {
-                setUser({
-                    email: data.msg.email,
-                    username: data.msg.username,
-                    firstname: data.msg.firstname,
-                    middlename: data.msg.middlename,
-                    lastname: data.msg.lastname
-                })
+                setEdit(false)
             })
-
-            await fetch("/api/user/account", 
-                {
-                    method: "GET",
-                    headers: 
-                    {
-                        "Content-Type": "application/json"
-                    }
-                }
-            ).then(response => {
-                if(!response.ok) throw new Error(JSON.stringify(response.text))
-                return response.json()
-            }).then(data => {
-                setAccount({
-                    credits: data.msg.credits,
-                    uid: data.msg.uid
-                })
-            })
-
-            setIsLoading(false)
-            
+            setChanging(false)
         } catch(Error) {
             console.log(Error)
-            redirect("/")
         }
     }
 
@@ -94,7 +90,7 @@ export default function Profile() {
           <div className="flex items-center space-x-6">
             <div className="relative">
               <img
-                src={"user.profileImage"}
+                src={dp.src}
                 alt="Profile"
                 className="w-24 h-24 rounded-2xl object-cover border-2 border-[#1F2937]"
               />
@@ -104,9 +100,9 @@ export default function Profile() {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white">
-                {user?.firstname} {user?.middlename} {user?.lastname}
+                {userInfo?.firstname} {userInfo?.middlename} {userInfo?.lastname}
               </h1>
-              <p className="text-gray-400 mt-1">@{user?.username}</p>
+              <p className="text-gray-400 mt-1">@{userInfo?.username}</p>
             </div>
           </div>
     
@@ -124,28 +120,76 @@ export default function Profile() {
                 ) : (
                   <div className="text-lg font-medium text-white">
                     {field === "name"
-                      ? `${user?.firstname}`
+                      ? `${userInfo?.firstname}`
                       : field === "email"
-                      ? user?.email
-                      : user?.username}
+                      ? userInfo?.email
+                      : userInfo?.username}
                   </div>
                 )}
+                {
+                  isEdit && field !== "email" && (
+                    <input
+                      onChange={(e) => {
+                        if(field === "username") setUsername(e.target.value)
+                        else setName(e.target.value)
+                      }}
+                      type="text"
+                      className="mt-2 w-full bg-[#1F2937] text-white px-4 py-3 rounded-xl focus:outline-none"
+                      placeholder={`Enter new ${field}`}
+                    />
+                  )
+                }
               </div>
             ))}
           </div>
     
-          <div className="flex flex-wrap gap-4 pt-6">
-            <button className="group relative px-6 py-3 bg-[#1F2937] rounded-xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 transition-transform duration-300 group-hover:translate-x-0 -translate-x-full"></div>
-              <span className="relative flex items-center font-medium">
-                <Settings className="w-4 h-4 mr-2" />
-                Edit Profile
-              </span>
-            </button>
+          <div className="flex flex-wrap gap-4 pt-6 justify-between">
+            {
+              isEdit ? (
+                <div className="flex gap-4">
+                <button onClick={() => (
+                  updateData()
+                )} className="group relative px-6 py-3 bg-[#1F2937] rounded-xl overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-400 transition-transform duration-300 group-hover:translate-x-0 -translate-x-full"></div>
+                  <span className="relative flex items-center font-medium">
+                    {
+                      changing ? (
+                        <>
+                          <span className="w-4 h-4 mr-2 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          {/* <Settings className="w-4 h-4 mr-2" /> */}
+                          Save
+                        </>
+                      )
+                    }
+                  </span>
+                </button>
+                <button onClick={() => {
+                  setUsername("")
+                  setName("")
+                  setEdit(false)
+                }} className="group relative px-6 py-3 bg-[#1F2937] rounded-xl overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-400 transition-transform duration-300 group-hover:translate-x-0 -translate-x-full"></div>
+                  <span className="relative flex items-center font-medium">
+                    cancel
+                  </span>
+                </button>
+                </div>
+              ) : (
+                <button onClick={() => setEdit(true)} className="group relative px-6 py-3 bg-[#1F2937] rounded-xl overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 transition-transform duration-300 group-hover:translate-x-0 -translate-x-full"></div>
+                  <span className="relative flex items-center font-medium">
+                    <Settings className="w-4 h-4 mr-2" />
+                    Edit Profile
+                  </span>
+                </button>
+              )
+            }
             <button
-              onClick={handleSignOut}
-              className="group relative px-6 py-3 bg-[#1F2937] rounded-xl overflow-hidden"
-            >
+              onClick={() => handleSignOut()} className="group relative px-6 py-3 bg-[#1F2937] rounded-xl overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-400 transition-transform duration-300 group-hover:translate-x-0 -translate-x-full"></div>
               <span className="relative flex items-center font-medium">
                 <LogOut className="w-4 h-4 mr-2" />
@@ -164,7 +208,7 @@ export default function Profile() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-blue-100 text-lg mb-2">Available Credits</p>
-                  <p className="text-4xl font-bold text-white">{account?.credits}</p>
+                  <p className="text-4xl font-bold text-white">{userInfo?.credits}</p>
                 </div>
                 <CreditCard className="w-12 h-12 text-blue-100" />
               </div>
@@ -248,15 +292,28 @@ export default function Profile() {
       ];
 
     const handleSignOut = async () => {
-        try {
-            
-        } catch (error) {
-            console.error("Sign out failed:", error);
+      await fetch("/api/auth/signout", 
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
         }
+      ).then((response) => {
+        if(!response.ok) {
+          throw new Error()
+        }
+        return response.json()
+      }).then(() => {
+        updateUserInfo(setUserInfoState({}))
+        router.push("/")
+
+      }).catch((error) => {
+        console.log(error)
+      })
     }
 
     useEffect(() => {
-        getData()
         fetchIcons()
     }, [])
 

@@ -9,7 +9,7 @@ export default function Footer() {
               <path fillRule="evenodd" clipRule="evenodd" d="M5 4H19C19.5523 4 20 4.44771 20 5V19C20 19.5523 19.5523 20 19 20H5C4.44772 20 4 19.5523 4 19V5C4 4.44772 4.44772 4 5 4ZM2 5C2 3.34315 3.34315 2 5 2H19C20.6569 2 22 3.34315 22 5V19C22 20.6569 20.6569 22 19 22H5C3.34315 22 2 20.6569 2 19V5ZM10 9H7V7H17V9H14V16H10V9Z" fill="currentColor" />
             </svg>
           </div>
-          <div className="text-xl font-semibold text-white">IconGen Inc.</div>
+          <div className="text-xl font-semibold text-white px-2">IconGen Inc.</div>
         </div>
 
         <div className="flex flex-wrap gap-8">

@@ -6,7 +6,7 @@ export default function Pricing() {
                 <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="max-w-xl mx-auto text-center">
                         <h2 className="text-4xl text-white font-bold lg:text-6xl sm:text-5xl font-poppins">We got a plan for you!</h2>
-                        <p className="mt-4 text-lg leading-relaxed text-slate-400">Pay monthly or yearly and enjoy a 7 day free trial. Cancel whenever you feel like it - no fuss and no hoops.</p>
+                        <p className="mt-4 text-lg leading-relaxed text-slate-400">Choose a flexible monthly or yearly subscription. Easy cancellation whenever you need - simple and straightforward.</p>
                     </div>
                     <div className="hidden mt-16 lg:block">
                         <table className="w-full">
@@ -40,76 +40,59 @@ export default function Pricing() {
                                     <td className="py-4 pr-4 font-medium border-b border-gray-400 text-white">Tokens</td>
                                     <td className="px-4 py-4 text-center border-b border-gray-400 text-white">01 /day</td>
                                     <td className="px-4 py-4 text-center border-b border-gray-400 text-white">50</td>
-                                    <td className="px-4 py-4 text-center text-white bg-gray-700 border-b border-white ">50</td>
+                                    <td className="px-4 py-4 text-center text-white bg-gray-700 border-b border-white ">120</td>
                                     <td className="px-4 py-4 text-center border-b border-gray-400 text-white">Unlimited</td>
                                 </tr>
                                 <tr>
-                                    <td className="py-4 pr-4 font-medium border-b border-gray-400 text-white">Quality</td>
-                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">100 GB</td>
-                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">500 GB</td>
-                                    <td className="px-4 py-4 text-center text-white bg-gray-700 border-b border-white">1 TB</td>
-                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">Unlimited</td>
-                                </tr>
-                                <tr>
-                                    <td className="py-4 pr-4 font-medium border-b border-gray-400 text-white">Size</td>
+                                    <td className="py-4 pr-4 font-medium border-b border-gray-400 text-white">Save icons</td>
                                     <td className="px-4 py-4 text-center border-b border-gray-400 text-white">-</td>
                                     <td className="px-4 py-4 text-center border-b border-gray-400 text-white">15</td>
-                                    <td className="px-4 py-4 text-center text-white bg-gray-700 border-b border-white">Unlimited</td>
+                                    <td className="px-4 py-4 text-center text-white bg-gray-700 border-b border-white">40</td>
                                     <td className="px-4 py-4 text-center border-b border-gray-400 text-white">Unlimited</td>
                                 </tr>
                                 <tr>
-                                    <td className="py-4 pr-4 font-medium border-b border-gray-400 text-white">Mode</td>
-                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">-</td>
+                                    <td className="py-4 pr-4 font-medium border-b border-gray-400 text-white">Dimension</td>
+                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">Small</td>
+                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">Small<br></br>Medium</td>
+                                    <td className="px-4 py-4 text-center text-white bg-gray-700 border-b border-white">All</td>
+                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">All</td>
+                                </tr>
+                                <tr>
+                                    <td className="py-4 pr-4 font-medium border-b border-gray-400 text-white">Model</td>
+                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">v2</td>
                                     <td className="px-4 py-4 text-center border-b border-gray-400 text-white">
-                                        <svg className="w-5 h-5 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        v2
+                                        <br></br>
+                                        v3
+                                        {/* <svg className="w-5 h-5 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
-                                        </svg>
+                                        </svg> */}
                                     </td>
                                     <td className="px-4 py-4 text-center text-white bg-gray-700 border-b border-white">
-                                        <svg className="w-5 h-5 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        v2
+                                        <br></br>
+                                        v3
+                                        {/* <svg className="w-5 h-5 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
-                                        </svg>
+                                        </svg> */}
                                     </td>
                                     <td className="px-4 py-4 text-center border-b border-gray-400 text-white">
-                                        <svg className="w-5 h-5 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        v2
+                                        <br></br>
+                                        v3
+                                        {/* <svg className="w-5 h-5 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
-                                        </svg>
+                                        </svg> */}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td className="py-4 pr-4 font-medium border-b border-gray-400 text-white">Styles</td>
                                     <td className="px-4 py-4 text-center border-b border-gray-400 text-white">-</td>
-                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">-</td>
-                                    <td className="px-4 py-4 text-center text-white bg-gray-700 border-b border-white">
-                                        <svg className="w-5 h-5 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
-                                        </svg>
-                                    </td>
                                     <td className="px-4 py-4 text-center border-b border-gray-400 text-white">
                                         <svg className="w-5 h-5 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
                                         </svg>
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td className="py-4 pr-4 font-medium border-b border-gray-400 text-white">Save icons</td>
-                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">-</td>
-                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">-</td>
-                                    <td className="px-4 py-4 text-center text-white bg-gray-700 border-b border-white">
-                                        <svg className="w-5 h-5 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
-                                        </svg>
-                                    </td>
-                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">
-                                        <svg className="w-5 h-5 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
-                                        </svg>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="py-4 pr-4 font-medium border-b border-gray-400 text-white">WordPress install</td>
-                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">-</td>
-                                    <td className="px-4 py-4 text-center border-b border-gray-400 text-white">-</td>
                                     <td className="px-4 py-4 text-center text-white bg-gray-700 border-b border-white">
                                         <svg className="w-5 h-5 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>

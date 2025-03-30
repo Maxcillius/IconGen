@@ -1,9 +1,13 @@
+import Image from "next/image"
+import dp from '@/images/dp.jpg'
+
 export default function User({name, email}: {name: string, email: string}) {
     return (
         <>
             <div className="flex flex-row justify-center gap-4">
                 <div className="flex flex-col justify-center">
-                    <div className="bg-slate-300 rounded-full h-10 w-10"></div>
+                    <Image src={dp} height={100} width={100} alt="dp" className="rounded-full h-10 w-10"></Image>
+                    {/* <div className="bg-slate-300 rounded-full h-10 w-10"></div> */}
                 </div>
                 <div className="lg:flex flex-col justify-center hidden lg:visible">
                     <div className="flex flex-row justify-between">
