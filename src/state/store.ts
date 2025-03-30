@@ -1,13 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit"
 import popupReducer from "./popup/popup"
 import styleReducer from "./styles/style"
-import subscriptionReducer from "./subscription/subscription"
+import userInfoReducer from "./userData/userData"
 
 export const store = configureStore({
     reducer: {
         popup: popupReducer,
         style: styleReducer,
-        subscription: subscriptionReducer
+        userInfo: userInfoReducer
     }
 })
 

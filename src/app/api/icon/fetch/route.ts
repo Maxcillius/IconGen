@@ -1,15 +1,17 @@
-import { NextRequest, NextResponse } from "next/server"
+export const dynamic = "force-dynamic";
+
+import { NextResponse } from "next/server"
 import { ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3"
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import s3 from "@/utils/s3"
 import { cookies } from "next/headers"
 import admin from "@/utils/firebaseAdmin"
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         const cookieStore = await cookies();
-        let sessionTokenCookie = cookieStore.get("sessionKey")
-        let sessionToken = sessionTokenCookie?.value
+        const sessionTokenCookie = cookieStore.get("sessionKey")
+        const sessionToken = sessionTokenCookie?.value
         if(!sessionToken) {
             return NextResponse.json({
                 success: 0,

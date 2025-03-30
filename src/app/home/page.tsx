@@ -1,29 +1,39 @@
-'use client'
+"use client"
 
-import { dall2, dall3 } from "../../interfaces/dimensions"
+// import { dall2, dall3 } from "../../interfaces/dimensions"
 import { useState } from "react"
 import { useSelector } from "react-redux";
-import { Crown, Download, Save, X, Trash2, Upload, Info, Sparkles, Lock } from 'lucide-react';
-import { RootState } from '@/state/store';
+import { Crown, Download, Save, X, Trash2, Info, Sparkles, Lock } from "lucide-react";
+import { RootState } from "@/state/store";
+import { useDispatch } from "react-redux";
+import { setPopupState } from "@/state/popup/popup";
+import Image from "next/image";
 
 export default function Home() {
     const [quality, setQuality] = useState("standard");
     const [dimension, setDimension] = useState("small");
     const [prompt, setPrompt] = useState("");
     const [error, setError] = useState("");
-    const [imageLink, setImageLink] = useState("");
+    const [imageLink] = useState("");
     const [saved, setSaved] = useState(false);
     const [subspopup, setSubspopup] = useState(false);
 
     const subscription: number = useSelector((state: RootState) => {
-        return state.subscription.value
+        return state.userInfo.value.subscription
     })
 
     const styleContent: string = useSelector((state: RootState) => {
         return state.style.value
     })
 
+    const setVisibility = useDispatch()
+
     const generateIcon = async () => {
+        if(subscription === -1) {
+            console.log(subscription)
+            setVisibility(setPopupState())
+            return
+        }
         if (prompt === "") {
             setError("Please enter a prompt to generate your icon");
             return;
@@ -86,7 +96,7 @@ export default function Home() {
 
     return (
         <>
-            <div className='h-16 w-full'></div>
+            <div className="h-16 w-full"></div>
             <div className="min-h-screen bg-[#0A0F16]">
                 {subspopup && <SubscriptionPopup close={setSubspopup} />}
 
@@ -143,14 +153,14 @@ export default function Home() {
                                                     <button
                                                         onClick={() => imageLink && handleSave(imageLink)}
                                                         className={`p-2 rounded-lg transition-all duration-300 ${saved
-                                                                ? 'bg-green-500/20 text-green-400'
-                                                                : 'bg-[#1E293B] hover:bg-[#2D3B4F] text-gray-400 hover:text-white'
+                                                                ? "bg-green-500/20 text-green-400"
+                                                                : "bg-[#1E293B] hover:bg-[#2D3B4F] text-gray-400 hover:text-white"
                                                             }`}
                                                     >
                                                         <Save size={18} />
                                                     </button>
                                                     <button
-                                                        onClick={() => imageLink && window.open(imageLink, '_blank')}
+                                                        onClick={() => imageLink && window.open(imageLink, "_blank")}
                                                         className="p-2 bg-[#1E293B] hover:bg-[#2D3B4F] rounded-lg transition-all duration-300 text-gray-400 hover:text-white"
                                                     >
                                                         <Download size={18} />
@@ -161,7 +171,7 @@ export default function Home() {
                                                 <div className="w-64 h-64 rounded-full bg-gradient-to-br from-[#1E293B] to-[#111827] p-1 shadow-2xl shadow-black/40">
                                                     <div className="w-full h-full rounded-full bg-[#0A0F16] flex items-center justify-center">
                                                         {imageLink ? (
-                                                            <img
+                                                            <Image
                                                                 src={imageLink}
                                                                 alt="Generated icon"
                                                                 className="w-full h-full rounded-full object-cover"
@@ -193,8 +203,8 @@ export default function Home() {
                                                     <button
                                                         onClick={() => setQuality("standard")}
                                                         className={`py-2 px-4 rounded-md transition-all duration-300 ${quality === "standard"
-                                                                ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20'
-                                                                : 'text-gray-400 hover:text-white'
+                                                                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                : "text-gray-400 hover:text-white"
                                                             }`}
                                                     >
                                                         Standard
@@ -203,9 +213,9 @@ export default function Home() {
                                                         <button
                                                             onClick={() => setQuality("hd")}
                                                             className={`w-full py-2 px-4 rounded-md transition-all duration-300 ${quality === "hd"
-                                                                    ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20'
-                                                                    : 'text-gray-400 hover:text-white'
-                                                                } ${subscription < 1 ? 'opacity-50' : ''}`}
+                                                                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                    : "text-gray-400 hover:text-white"
+                                                                } ${subscription < 1 ? "opacity-50" : ""}`}
                                                         >
                                                             HD
                                                         </button>
@@ -227,14 +237,14 @@ export default function Home() {
                                                             <button
                                                                 onClick={() => setDimension(size)}
                                                                 className={`w-full py-2 px-4 rounded-md capitalize transition-all duration-300 ${dimension === size
-                                                                        ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20'
-                                                                        : 'text-gray-400 hover:text-white'
-                                                                    } ${subscription < index ? 'opacity-50' : ''}`}
+                                                                        ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                        : "text-gray-400 hover:text-white"
+                                                                    } ${subscription < index ? "opacity-50" : ""}`}
                                                             >
                                                                 {size}
                                                             </button>
                                                             {subscription < index && (
-                                                                <div onClick={() => {setSubspopup(true)}} className="absolute inset-0 flex items-center justify-center">
+                                                                <div onClick={() => {setSubspopup(true)}} className="hover:cursor-pointer absolute inset-0 flex items-center justify-center">
                                                                     <Lock className="w-4 h-4 text-gray-400" />
                                                                 </div>
                                                             )}
@@ -322,7 +332,7 @@ function SubscriptionPopup({ close }: { close: React.Dispatch<React.SetStateActi
 
                         <div className="bg-[#0A0F16] rounded-xl p-4 border border-[#1F2937]">
                             <ul className="space-y-3">
-                                {['HD Quality Generation', 'Larger Dimensions', 'Priority Processing'].map((feature) => (
+                                {["HD Quality Generation", "Larger Dimensions", "Priority Processing"].map((feature) => (
                                     <li key={feature} className="flex items-center gap-3 text-gray-300">
                                         <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
                                         {feature}

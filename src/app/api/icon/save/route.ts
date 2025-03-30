@@ -6,15 +6,15 @@ import s3 from "@/utils/s3"
 import { PutObjectCommand } from "@aws-sdk/client-s3"
 import { decode } from "next-auth/jwt"
 import { cookies } from "next/headers"
-import os from 'os'
+import os from "os"
 
 const secret = process.env.NEXTAUTH_SECRET as string
 
 export async function POST(req: NextRequest) {
     const { url } = await req.json()
     const cookieStore = await cookies();
-    let sessionTokenCookie = cookieStore.get("next-auth.session-token")
-    let sessionToken = sessionTokenCookie?.value
+    const sessionTokenCookie = cookieStore.get("next-auth.session-token")
+    const sessionToken = sessionTokenCookie?.value
 
     const decoded = await decode({
         token: sessionToken,
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
                 reject(err);
             });
             
-            response.data.on("error", (err: any) => {
+            response.data.on("error", (err: Error) => {
                 reject(err);
             });
         });
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
         });
         
         } catch (err) {
-            // console.log(err)
+            console.log(err)
             return NextResponse.json({
                 success: 0,
                 msg: "Error while saving image"

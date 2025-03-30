@@ -46,11 +46,11 @@ export async function POST(req: NextRequest) {
         }
         const cookieStore = await cookies()
         cookieStore.set({
-            name: 'sessionKey',
+            name: "sessionKey",
             value: accessToken,
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
             maxAge: 60 * 60 * 24 * 30 // 1 month
         })
         return NextResponse.json({
@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
             token: accessToken
         })        
     } catch (error) {
+        console.log(error)
         return NextResponse.json({
             success: 0,
             msg: "Failed to signup"

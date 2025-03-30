@@ -5,8 +5,8 @@ import admin from "@/utils/firebaseAdmin";
 
 export async function GET() {
     const cookieStore = await cookies();
-    let sessionTokenCookie = cookieStore.get("sessionKey")
-    let sessionToken = sessionTokenCookie?.value
+    const sessionTokenCookie = cookieStore.get("sessionKey")
+    const sessionToken = sessionTokenCookie?.value
     if(!sessionToken) {
         return NextResponse.json({
             success: 0,

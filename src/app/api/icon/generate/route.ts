@@ -7,7 +7,7 @@ import db from "@/db/db";
 
 const openai = new OpenAI();
 
-let modeContent = new Map<string, string>()
+const modeContent = new Map<string, string>()
 modeContent.set("Normal", "Create a balanced photograph with natural lighting and realistic proportions. Use standard photography techniques with moderate contrast and depth. Colors should appear true-to-life with natural saturation. The subject is ")
 modeContent.set("Cartoon", "Generate a cartoon illustration with bold black outlines of varying thickness. Use flat, vibrant colors with minimal gradients. Exaggerate key features while simplifying details. Show expressive facial features and playful proportions with larger heads/eyes. The scene depicts ")
 modeContent.set("Pixel", "Design a pixel art image within a limited resolution grid (64x64). Use a restricted color palette of 16 colors maximum. Create deliberate blocky shapes with clear pixel definition. Implement dithering techniques for gradients. The composition shows ")    
@@ -17,8 +17,8 @@ export async function POST(req: NextRequest) {
     try {
         const { prompt, model, quality, size, style, mode } = await req.json()
         const cookieStore = await cookies();
-        let sessionTokenCookie = cookieStore.get("sessionKey")
-        let sessionToken = sessionTokenCookie?.value
+        const sessionTokenCookie = cookieStore.get("sessionKey")
+        const sessionToken = sessionTokenCookie?.value
         if(!sessionToken) {
             return NextResponse.json({
                 success: 0,

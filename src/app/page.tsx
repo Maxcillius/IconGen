@@ -1,11 +1,11 @@
-'use client'
+"use client"
 
-import React, { useState, useEffect } from 'react';
-import { XIcon as Icons, Palette, Wand2, Zap, Code2, ArrowRight, CheckCircle2, Sparkles, Image, Download } from 'lucide-react';
-import Link from 'next/link';
+import React, { useState, useEffect } from "react";
+import { XIcon as Icons, Palette, Wand2, Zap, Code2, ArrowRight, Sparkles, Image, Download } from "lucide-react";
+import Link from "next/link";
 
 function TypewriterText({ text }: { text: string }) {
-  const [displayText, setDisplayText] = useState('');
+  const [displayText, setDisplayText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function App() {
                 <Icons className="h-16 w-16 text-indigo-500" />
               </div>
               <h1 className="text-5xl font-bold text-white mb-6">
-                Transform Your Ideas into{' '}
+                Transform Your Ideas into{" "}
                 <TypewriterText text="Beautiful Icons" />
               </h1>
               <p className="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
@@ -73,7 +73,7 @@ export default function App() {
                   <Palette className="h-6 w-6 text-indigo-500" />
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-3">Customizable Styles</h3>
-                <p className="text-slate-300">Adjust colors, sizes, and styles to match your brand's unique identity.</p>
+                <p className="text-slate-300">Adjust colors, sizes, and styles to match your brand"s unique identity.</p>
               </div>
               <div className="bg-slate-700 p-8 rounded-xl">
                 <div className="bg-indigo-500/10 p-3 rounded-lg w-fit mb-4">

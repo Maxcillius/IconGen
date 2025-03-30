@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useState } from "react"
 import Image from "next/image"
@@ -35,8 +35,8 @@ export default function AuthPopup() {
                 }
             )
             if (!response.ok) {
-                console.error('Response not OK:', response.status, response.statusText);
-                throw new Error('Network response was not ok');
+                console.error("Response not OK:", response.status, response.statusText);
+                throw new Error("Network response was not ok");
             }
             const data = await response.json()
             if (data.success === 0) {
@@ -60,8 +60,8 @@ export default function AuthPopup() {
                 headers: { "Content-Type": "application/json" }
             })
             if (!response.ok) {
-                console.error('Response not OK:', response.status, response.statusText);
-                throw new Error('Network response was not ok');
+                console.error("Response not OK:", response.status, response.statusText);
+                throw new Error("Network response was not ok");
             }
             const data = await response.json()
             if (data.success === 0) {
@@ -249,7 +249,7 @@ export default function AuthPopup() {
                             
                             {/* Footer */}
                             <div className="flex flex-row justify-center gap-2">
-                                <p className="text-sm text-gray-600">Don't have an account?</p>
+                                <p className="text-sm text-gray-600">Don"t have an account?</p>
                                 <button 
                                     onClick={() => {
                                     setEmail("")

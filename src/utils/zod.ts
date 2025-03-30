@@ -1,4 +1,4 @@
-import z from 'zod'
+import z from "zod"
 
 const signUp = z.object({
     email: z.string().min(6, { message: "Email is too small"}).email({ message: "Email is invalid"}),

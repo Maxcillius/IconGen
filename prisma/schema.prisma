@@ -21,6 +21,7 @@ model Account {
     Users       User[]
     Tokens      Token[]
     credits     Int         @default(1)
+    subscription Int       @default(0)
 }
 
 model Token {

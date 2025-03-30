@@ -1,21 +1,18 @@
-'use client'
+"use client"
 
 import { redirect } from "next/navigation"
 import { useEffect, useState } from "react"
 import ProfileData from "@/types/profileData"
-import { usePathname } from "next/navigation"
-import { CreditCard, Settings, User, Shield, Image, ChevronRight, LogOut } from 'lucide-react'
+import { CreditCard, Settings, User, Shield, Image, ChevronRight, LogOut } from "lucide-react"
 import AccountData from "@/types/accountData"
 
 export default function Profile() {
 
-    const path = usePathname()
-    const [section, setSection] = useState(path.split('/').at(-1))
     const [user, setUser] = useState<ProfileData>()
     const [account, setAccount] = useState<AccountData>()
     const [icons, setIcons] = useState<{key: string, url: string}[]>([])
     const [isLoading, setIsLoading] = useState(!user)
-    const [activeSection, setActiveSection] = useState('profile')
+    const [activeSection, setActiveSection] = useState("profile")
 
     const fetchIcons = async () => {
         await fetch("/api/icon/fetch", 
@@ -30,6 +27,7 @@ export default function Profile() {
             return response.json()
         }).then((data) => {
             // console.log(data.contents)
+            if(!data.contents) redirect("/")
             data.contents.map((obj: {key: string, url: string}) => {
                 setIcons((prev) => [
                     ...prev, {
@@ -86,6 +84,7 @@ export default function Profile() {
             setIsLoading(false)
             
         } catch(Error) {
+            console.log(Error)
             redirect("/")
         }
     }
@@ -112,7 +111,7 @@ export default function Profile() {
           </div>
     
           <div className="grid gap-6">
-            {['username', 'email', 'name'].map((field: string) => (
+            {["username", "email", "name"].map((field: string) => (
               <div
                 key={field}
                 className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6 transition-shadow hover:shadow-lg"
@@ -124,9 +123,9 @@ export default function Profile() {
                   <div className="h-8 bg-[#1F2937] rounded-xl animate-pulse" />
                 ) : (
                   <div className="text-lg font-medium text-white">
-                    {field === 'name'
+                    {field === "name"
                       ? `${user?.firstname}`
-                      : field === 'email'
+                      : field === "email"
                       ? user?.email
                       : user?.username}
                   </div>
@@ -191,8 +190,8 @@ export default function Profile() {
                 <h3 className="text-lg font-semibold text-white mb-4">Billing History</h3>
                 <div className="space-y-4">
                   {[
-                    { date: '2024-03-15', amount: 500, status: 'Completed' },
-                    { date: '2024-02-28', amount: 1000, status: 'Completed' },
+                    { date: "2024-03-15", amount: 500, status: "Completed" },
+                    { date: "2024-02-28", amount: 1000, status: "Completed" },
                   ].map((transaction, index) => (
                     <div
                       key={index}
@@ -241,18 +240,18 @@ export default function Profile() {
       )
 
     const sections = [
-        { id: 'profile', icon: User, label: 'Profile', component: renderProfile },
-        { id: 'media', icon: Image, label: 'Media', component: renderMedia },
-        { id: 'billing', icon: CreditCard, label: 'Billing', component: renderBilling },
-        { id: 'security', icon: Shield, label: 'Security', component: renderSecurity },
-        { id: 'settings', icon: Settings, label: 'Settings', component: renderSettings },
+        { id: "profile", icon: User, label: "Profile", component: renderProfile },
+        { id: "media", icon: Image, label: "Media", component: renderMedia },
+        { id: "billing", icon: CreditCard, label: "Billing", component: renderBilling },
+        { id: "security", icon: Shield, label: "Security", component: renderSecurity },
+        { id: "settings", icon: Settings, label: "Settings", component: renderSettings },
       ];
 
     const handleSignOut = async () => {
         try {
             
         } catch (error) {
-            console.error('Sign out failed:', error);
+            console.error("Sign out failed:", error);
         }
     }
 
@@ -272,8 +271,8 @@ export default function Profile() {
                     onClick={() => setActiveSection(section.id)}
                     className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-colors ${
                       activeSection === section.id
-                        ? 'bg-[#1F2937] text-white'
-                        : 'text-gray-400 hover:bg-[#1F2937]/50'
+                        ? "bg-[#1F2937] text-white"
+                        : "text-gray-400 hover:bg-[#1F2937]/50"
                     }`}
                   >
                     <div className="flex items-center space-x-3">
@@ -293,7 +292,7 @@ export default function Profile() {
                       <div
                         key={section.id}
                         className={`transition-opacity duration-300 ${
-                          activeSection === section.id ? 'block' : 'hidden'
+                          activeSection === section.id ? "block" : "hidden"
                         }`}
                       >
                         {section.component()}
@@ -331,8 +330,8 @@ export default function Profile() {
           <h3 className="text-lg font-semibold text-white mb-4">Active Sessions</h3>
           <div className="space-y-4">
             {[
-              { device: 'MacBook Pro', location: 'New York, US', current: true },
-              { device: 'iPhone 13', location: 'New York, US', current: false },
+              { device: "MacBook Pro", location: "New York, US", current: true },
+              { device: "iPhone 13", location: "New York, US", current: false },
             ].map((session, index) => (
               <div key={index} className="flex items-center justify-between p-4 bg-[#1F2937] rounded-xl">
                 <div>
@@ -365,7 +364,7 @@ export default function Profile() {
       <div className="space-y-6">
         <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Notifications</h3>
-          {['Email notifications', 'Push notifications', 'Monthly newsletter'].map((setting, index) => (
+          {["Email notifications", "Push notifications", "Monthly newsletter"].map((setting, index) => (
             <div key={index} className="flex items-center justify-between py-4">
               <span className="text-gray-300">{setting}</span>
               <button className="w-12 h-6 bg-[#1F2937] rounded-full relative">

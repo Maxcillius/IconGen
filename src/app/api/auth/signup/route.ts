@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/db/db";
 import { signUp } from "@/utils/zod";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from '@/utils/firebaseClient';
+import { auth } from "@/utils/firebaseClient";
 import { cookies } from "next/headers";
 import admin from "@/utils/firebaseAdmin";
 
@@ -55,11 +55,11 @@ export async function POST(req: NextRequest) {
             const createCookie = await admin.auth().createSessionCookie( idToken, { expiresIn })
             // console.log(createCookie)
             cookieStore.set({
-                name: 'sessionKey',
+                name: "sessionKey",
                 value: createCookie,
                 httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
                 maxAge: 60 * 60 * 24 * 30 // 1 month
             })
         })

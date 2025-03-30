@@ -5,8 +5,8 @@ import admin from "@/utils/firebaseAdmin";
 
 export async function GET() {
     const cookieStore = await cookies();
-    let sessionTokenCookie = cookieStore.get("sessionKey")
-    let sessionToken = sessionTokenCookie?.value
+    const sessionTokenCookie = cookieStore.get("sessionKey")
+    const sessionToken = sessionTokenCookie?.value
     if(!sessionToken) {
         return NextResponse.json({
             success: 0,
@@ -29,11 +29,26 @@ export async function GET() {
                 userId: decodedToken.uid
             }
         })
+        const accountData = await db.account.findFirst({
+            where: {
+                uid: decodedToken.uid
+            }
+        })
         return NextResponse.json({
             success: 1,
-            msg: userData
+            msg: {
+                email: userData?.email,
+                username: userData?.username,
+                firstname: userData?.firstname,
+                middlename: userData?.middlename,
+                lastname: userData?.lastname,
+                credits: accountData?.credits,
+                uid: decodedToken.uid,
+                subscription: accountData?.subscription
+            }
         })
     } catch(error) {
+        console.log(error)
         return NextResponse.json({
             success: 0,
             msg: "Failed to fetch userdata"

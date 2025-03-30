@@ -1,4 +1,4 @@
-export default function User({name, email, plan}: {name: string, email: string, plan: boolean}) {
+export default function User({name, email}: {name: string, email: string}) {
     return (
         <>
             <div className="flex flex-row justify-center gap-4">

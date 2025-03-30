@@ -4,9 +4,6 @@ import "./globals.css"
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import ReduxProvider from "../components/ReduxProvider"
-import { Poppins } from "next/font/google"
-
-const poppins = Poppins({ subsets: ['latin'], weight: ['400', '600', '700']})
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
