@@ -25,6 +25,9 @@ export async function GET() {
         return NextResponse.json({
             success: 0,
             msg: "Failed to signed out"
+        },
+        {
+            status: 500
         })
     }
 }

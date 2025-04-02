@@ -1,6 +1,6 @@
 "use client"
 
-// import { dall2, dall3 } from "../../interfaces/dimensions"
+import { dall2, dall3 } from "../../interfaces/dimensions"
 import { useState } from "react"
 import { useSelector } from "react-redux";
 import { Crown, Download, Save, X, Trash2, Info, Sparkles, Lock } from "lucide-react";
@@ -15,9 +15,10 @@ export default function Home() {
     const [dimension, setDimension] = useState("small");
     const [prompt, setPrompt] = useState("");
     const [error, setError] = useState("");
-    const [imageLink] = useState("");
+    const [imageLink, setImageLink] = useState("");
     const [saved, setSaved] = useState(false);
     const [subspopup, setSubspopup] = useState(false);
+    const [generating, setGenerating] = useState(false)
 
     const subscription: number = useSelector((state: RootState) => {
         return state.userInfo.value.subscription
@@ -39,32 +40,35 @@ export default function Home() {
             setError("Please enter a prompt to generate your icon");
             return;
         }
-        // console.log(styleContent)
-        // try {
-        //     await fetch("/api/icon/generate",
-        //         {
-        //             method: "POST",
-        //             body: JSON.stringify({
-        //                 prompt: prompt,
-        //                 mode: styleContent,
-        //                 model: "dall-e-2",
-        //                 quality: quality,
-        //                 size: dall2[dimension],
-        //                 style: "natural",
-        //             })
-        //         }
-        //     ).then(response => {
-        //         return response.json()
-        //     }).then(data => {
-        //         setImageLink(data.Images.data[0].url)
-        //     })
-        // } catch(error) {
-        //     if (error instanceof Error) {
-        //         setError(error.message)
-        //     } else {
-        //         console.log(error)
-        //     }
-        // }
+        console.log(styleContent)
+        setGenerating(true)
+        try {
+            await fetch("/api/icon/generate",
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        mode: styleContent,
+                        model: "dall-e-2",
+                        quality: quality,
+                        size: dall2[dimension],
+                        style: "natural",
+                    })
+                }
+            ).then(response => {
+                return response.json()
+            }).then(data => {
+                if(data.success === 0) {
+                    setError(data.msg)
+                    setGenerating(false)
+                    return
+                }
+                setImageLink(data.Images.data[0].url)
+            })
+        } catch(error) {
+            console.log(error)
+        }
+        setGenerating(false)
     }
 
     const handleSave = async (imageLink: string) => {
@@ -178,8 +182,12 @@ export default function Home() {
                                                                 className="w-full h-full rounded-full object-cover"
                                                             />
                                                         ) : (
-                                                            <div className="text-gray-600">
-                                                                {/* <Upload size={32} /> */}
+                                                            <div className="text-gray-600 flex flex-row justify-center">
+                                                                {
+                                                                    generating && (
+                                                                        <div className="w-16 h-16 mr-2 rounded-full border-2 border-gray-300 border-t-transparent animate-spin"></div>
+                                                                    )
+                                                                }
                                                             </div>
                                                         )}
                                                     </div>
@@ -240,11 +248,11 @@ export default function Home() {
                                                                 className={`w-full py-2 px-4 rounded-md capitalize transition-all duration-300 ${dimension === size
                                                                         ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
                                                                         : "text-gray-400 hover:text-white"
-                                                                    } ${subscription < index ? "opacity-50" : ""}`}
+                                                                    } ${subscription < index && subscription !== -1 ? "opacity-50" : ""}`}
                                                             >
                                                                 {size}
-                                                            </button>
-                                                            {subscription < index && (
+                                                            </button>   
+                                                            {subscription < index && size !== "small" && (
                                                                 <div onClick={() => {setSubspopup(true)}} className="hover:cursor-pointer absolute inset-0 flex items-center justify-center">
                                                                     <Lock className="w-4 h-4 text-gray-400" />
                                                                 </div>

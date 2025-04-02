@@ -72,6 +72,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
             success: 0,
             msg: "Failed to signup",
+        },
+        {
+            status: 500
         });
     }
 }

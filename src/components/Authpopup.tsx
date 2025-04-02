@@ -8,7 +8,8 @@ import cross from "@/images/cross.png"
 import { auth } from "@/utils/firebaseClient"
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { redirect } from "next/navigation"
-import { setUserInfoState } from "@/state/userData/userData"
+import useGetUserInfo from "@/app/hooks/updateUser"
+
 
 export default function AuthPopup() {
 
@@ -22,41 +23,7 @@ export default function AuthPopup() {
     const [showSignupPassword, setShowSignupPassword] = useState(false)
     const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false)
     const [showSigninPassword, setShowSigninPassword] = useState(false)
-
-    const setUserInfo = useDispatch()
-
-    const getUserInfo = async () => {
-        try {
-            await fetch("/api/user/profile", 
-                {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json" }
-                }
-            ).then(response => {
-                if(!response.ok) throw new Error("Error")
-                return response.json()
-            }).then(data => {
-                // console.log(data)
-                if(!data.success) {
-                    return
-                }
-                setUserInfo(setUserInfoState({
-                    email: data.msg.email,
-                    username: data.msg.username,
-                    firstname: data.msg.firstname,
-                    middlename: data.msg.middlename,
-                    lastname: data.msg.lastname,
-                    credits: data.msg.credits,
-                    uid: data.msg.uid,
-                    subscription: data.msg.subscription
-                }))
-            }).catch(error => {
-                console.log(error)
-            })
-        } catch(error) {
-            console.log(error)
-        }
-    }
+    const getUserInfo = useGetUserInfo()
 
     const signupCall = async () => {
         if(confirmPassword !== password) {
@@ -75,19 +42,16 @@ export default function AuthPopup() {
                     headers: { "Content-Type": "application/json" }
                 }
             )
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
             const data = await response.json()
-            if (data.success === 0) {
+            if(data.success === 0) {
                 setAlert(data.msg)
                 setProcess(false)
                 return
             }
             getUserInfo()
             setVisibility(setPopupState())
-        } catch(Error) {
-            console.log(Error)
+            setProcess(false)
+        } catch(error) {
             setProcess(false)
         }
     }
@@ -103,19 +67,17 @@ export default function AuthPopup() {
                 }),
                 headers: { "Content-Type": "application/json" }
             })
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
+
             const data = await response.json()
-            if (data.success === 0) {
+            if(data.success === 0) {
                 setAlert(data.msg)
                 setProcess(false)
                 return
             }
             getUserInfo()
             setVisibility(setPopupState())
-        } catch(Error) {
-            console.log(Error)
+            setProcess(false)
+        } catch(error) {
             setProcess(false)
         }
     }
@@ -173,11 +135,11 @@ export default function AuthPopup() {
                         
                         {/* Alert */}
                         {alert && (
-                        <div className="flex flex-row justify-center text-red-600 mb-4">
-                            {alert}
-                        </div>
-                        )}
-                        
+                                <div className="flex flex-row justify-center text-red-600 mb-4">
+                                    {alert}
+                                </div>
+                            )
+                        }   
                         {/* Form */}
                         <div className="flex flex-col justify-center gap-4 py-4">
                             <input 
@@ -194,7 +156,7 @@ export default function AuthPopup() {
                                     placeholder="Password" 
                                     className="py-4 px-6 rounded-3xl border-2 border-gray-100 bg-gray-50 placeholder-gray-500 text-sm focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all w-full"
                                 />
-                                {showSigninPassword ? 
+                                {showSignupPassword ? 
                                     <svg onClick={() => {setShowSignupPassword(!showSignupPassword)}} className="hover:cursor-pointer absolute right-4 top-1/2 transform -translate-y-1/2 h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M2 2L22 22" stroke="#5e5c64" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> <path d="M6.71277 6.7226C3.66479 8.79527 2 12 2 12C2 12 5.63636 19 12 19C14.0503 19 15.8174 18.2734 17.2711 17.2884M11 5.05822C11.3254 5.02013 11.6588 5 12 5C18.3636 5 22 12 22 12C22 12 21.3082 13.3317 20 14.8335" stroke="#5e5c64" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> <path d="M14 14.2362C13.4692 14.7112 12.7684 15.0001 12 15.0001C10.3431 15.0001 9 13.657 9 12.0001C9 11.1764 9.33193 10.4303 9.86932 9.88818" stroke="#5e5c64" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
                                 :
                                     <svg onClick={() => {setShowSignupPassword(!showSignupPassword)}} className="hover:cursor-pointer absolute right-4 top-1/2 transform -translate-y-1/2 h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12" stroke="#5e5c64" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> <path d="M1 12C1 12 5 20 12 20C19 20 23 12 23 12" stroke="#5e5c64" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> <circle cx="12" cy="12" r="3" stroke="#5e5c64" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></circle> </g></svg>
@@ -279,6 +241,14 @@ export default function AuthPopup() {
                             
                             {/* Title */}
                             <h1 className="text-center text-black font-bold text-2xl pb-6">Sign In to X</h1>
+
+                            {/* Alert */}
+                            {alert && (
+                                    <div className="flex flex-row justify-center text-red-600 mb-4">
+                                        {alert}
+                                    </div>
+                                )
+                            }   
                             
                             {/* Form */}
                             <div className="flex flex-col justify-center gap-4 py-4">

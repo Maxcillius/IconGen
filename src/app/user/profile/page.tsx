@@ -9,24 +9,27 @@ import { RootState } from "@/state/store"
 import { useRouter } from "next/navigation"
 import { setUserInfoState } from "@/state/userData/userData"
 import { useDispatch } from "react-redux"
+import useGetUserInfo from "@/app/hooks/updateUser"
 // import { auth } from "@/utils/firebaseClient"
 // import { signOut } from "firebase/auth"
 
 export default function Profile() {
 
+  const userInfo = useSelector((state: RootState) => {
+      return state.userInfo.value      
+  })
+
     const router = useRouter()
     const [icons, setIcons] = useState<{key: string, url: string}[]>([])
     const [activeSection, setActiveSection] = useState("profile")
     const [isEdit, setEdit] = useState(false)
-    const [newUsername, setUsername] = useState("")
-    const [newName, setName] = useState("")
+    const [newUsername, setUsername] = useState(userInfo.username)
+    const [newName, setName] = useState(userInfo.firstname)
     const [changing, setChanging] = useState(false)
-
-    const userInfo = useSelector((state: RootState) => {
-        return state.userInfo.value      
-    })
+    const [alert, setAlert] = useState("")
 
     const updateUserInfo = useDispatch()
+    const getUserInfo = useGetUserInfo()
 
     const [isLoading, setIsLoading] = useState(!userInfo)
 
@@ -60,7 +63,7 @@ export default function Profile() {
     const updateData = async () => { 
         try {
             setChanging(true)
-            await fetch("/api/user/action/update", 
+            const response = await fetch("/api/user/action/update", 
                 {
                     method: "POST",
                     headers: 
@@ -69,17 +72,24 @@ export default function Profile() {
                     },
                     body: JSON.stringify({
                         username: newUsername,
-                        name: newName,
+                        firstname: newName,
                         email: userInfo.email
                     })
                 }
-            ).then(response => {
-                if(!response.ok) throw new Error(JSON.stringify(response.text))
-                return response.json()
-            }).then(data => {
-                setEdit(false)
-            })
+            )
+            const data = await response.json()
+            if(data.success === 0) {
+              setChanging(false)
+              setAlert(data.msg)
+              setTimeout(() => {
+                setAlert("")
+              }, 2500)
+              return
+            }
             setChanging(false)
+            setEdit(false)
+            getUserInfo()
+            router.refresh()
         } catch(Error) {
             console.log(Error)
         }
@@ -104,6 +114,14 @@ export default function Profile() {
               </h1>
               <p className="text-gray-400 mt-1">@{userInfo?.username}</p>
             </div>
+          </div>
+          <div className="flex flex-row justify-end h-14">
+            {alert && (
+                    <div className="flex flex-row justify-center text-red-600 mb-4">
+                        {alert}
+                    </div>
+                )
+            }  
           </div>
     
           <div className="grid gap-6">
@@ -133,6 +151,7 @@ export default function Profile() {
                         if(field === "username") setUsername(e.target.value)
                         else setName(e.target.value)
                       }}
+                      defaultValue={ field === "name" ? userInfo.firstname : userInfo.username}
                       type="text"
                       className="mt-2 w-full bg-[#1F2937] text-white px-4 py-3 rounded-xl focus:outline-none"
                       placeholder={`Enter new ${field}`}

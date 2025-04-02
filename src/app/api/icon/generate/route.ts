@@ -23,6 +23,9 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({
                 success: 0,
                 msg: "No session token found"
+            },
+            {
+                status: 401
             })
         }
         const decodedToken = await admin.auth().verifySessionCookie(sessionToken)
@@ -40,7 +43,7 @@ export async function POST(req: NextRequest) {
                 uid: decodedToken.uid
             }
         })
-        if(userAccount && userAccount.credits <= 0) {
+        if(userAccount && userAccount.credits <= 1) {
             return NextResponse.json({
                 success: 0,
                 msg: "Insufficient funds"
@@ -92,6 +95,9 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({
                     success: 0,
                     msg: "Error with image generation"
+                },
+                {
+                    status: 500
                 })
             }
         } catch(error) {
@@ -99,6 +105,9 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({
                 success: 0,
                 msg: "Failed to generate image"
+            },
+            {
+                status: 500
             })
         }
     } catch(error) {
@@ -106,6 +115,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
             success: 0,
             msg: "Something went wrong with user handling"
+        },
+        {
+            status: 500
         })
     }
 }
