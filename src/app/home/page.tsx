@@ -7,26 +7,39 @@ import { Crown, Download, Save, X, Trash2, Info, Sparkles, Lock } from "lucide-r
 import { RootState } from "@/state/store";
 import { useDispatch } from "react-redux";
 import { setPopupState } from "@/state/popup/popup";
+import { StaticImageData } from "next/image"
 import Image from "next/image";
 import Link from "next/link";
+import Sticker from "@/images/sticker.png"
+import Pixel from "@/images/pixel.png"
+import Vector from "@/images/vector.png"
 
 export default function Home() {
-    const [quality, setQuality] = useState("standard");
-    const [dimension, setDimension] = useState("small");
-    const [prompt, setPrompt] = useState("");
-    const [error, setError] = useState("");
-    const [imageLink, setImageLink] = useState("");
-    const [saved, setSaved] = useState(false);
-    const [subspopup, setSubspopup] = useState(false);
+    const [quality, setQuality] = useState("standard")
+    const [dimension, setDimension] = useState("small")
+    const [prompt, setPrompt] = useState("")
+    const [error, setError] = useState("")
+    const [imageLink, setImageLink] = useState("")
+    const [saved, setSaved] = useState(false)
+    const [subspopup, setSubspopup] = useState(false)
     const [generating, setGenerating] = useState(false)
+    const [mode, setMode] = useState("Pixel")
 
     const subscription: number = useSelector((state: RootState) => {
         return state.userInfo.value.subscription
     })
 
-    const styleContent: string = useSelector((state: RootState) => {
-        return state.style.value
-    })
+    const modeImages: Record<string, StaticImageData> = {
+        "Sticker": Sticker,
+        "Pixel": Pixel,
+        "Vector": Vector,
+    };
+
+    const modes = [
+        { id: "Pixel" },
+        { id: "Sticker" },
+        { id: "Vector" },
+    ];
 
     const setVisibility = useDispatch()
 
@@ -40,18 +53,20 @@ export default function Home() {
             setError("Please enter a prompt to generate your icon");
             return;
         }
-        console.log(styleContent)
+        // console.log(styleContent)
         setGenerating(true)
         try {
+            setError("")
             await fetch("/api/icon/generate",
                 {
                     method: "POST",
                     body: JSON.stringify({
                         prompt: prompt,
-                        mode: styleContent,
-                        model: "dall-e-2",
+                        mode: mode,
+                        model: "dall-e-3",
                         quality: quality,
-                        size: dall2[dimension],
+                        // size: dall2[dimension],
+                        size: "1024x1024",
                         style: "natural",
                     })
                 }
@@ -63,7 +78,7 @@ export default function Home() {
                     setGenerating(false)
                     return
                 }
-                setImageLink(data.Images.data[0].url)
+                setImageLink(data.url)
             })
         } catch(error) {
             console.log(error)
@@ -117,8 +132,23 @@ export default function Home() {
                                         Style Library
                                     </h3>
                                 </div>
-                                <div className="p-4 h-[calc(90vh-12rem)] overflow-y-auto">
-                                    {/* Style components would go here */}
+                                <div className="p-4 h-[calc(90vh-12rem)] overflow-y-scroll flex flex-col gap-5">
+                                    <div className="flex flex-row flex-wrap justify-evenly gap-5">
+                                        {
+                                            modes.map((style) => {
+                                                return (
+                                                    <div key={style.id} onClick={() => {setMode(style.id)}} className="relative hover:cursor-pointer">
+                                                        <div className={`absolute w-full h-full rounded-xl ${ mode === style.id ? "border-4 border-blue-600" : ""}`}></div>
+                                                            <Image src={modeImages[style.id]} alt="icon" 
+                                                            className={`w-28 h-28 rounded-xl`}
+                                                            >
+                                                            
+                                                            </Image>
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -172,24 +202,24 @@ export default function Home() {
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div className="bg-[#0A0F16] rounded-xl border border-[#1F2937] p-8 flex items-center justify-center">
+                                            <div className="relative bg-[#0A0F16] rounded-xl border border-[#1F2937] p-8 flex items-center justify-center">
+                                                {
+                                                    generating && (
+                                                        <>
+                                                            <div className="absolute w-64 h-64 rounded-full border-8 border-blue-700 border-l-transparent animate-spin"></div>
+                                                        </>
+                                                )}
                                                 <div className="w-64 h-64 rounded-full bg-gradient-to-br from-[#1E293B] to-[#111827] p-1 shadow-2xl shadow-black/40">
                                                     <div className="w-full h-full rounded-full bg-[#0A0F16] flex items-center justify-center">
-                                                        {imageLink ? (
+                                                        {imageLink &&
                                                             <Image
                                                                 src={imageLink}
                                                                 alt="Generated icon"
                                                                 className="w-full h-full rounded-full object-cover"
+                                                                width={500}
+                                                                height={500}
                                                             />
-                                                        ) : (
-                                                            <div className="text-gray-600 flex flex-row justify-center">
-                                                                {
-                                                                    generating && (
-                                                                        <div className="w-16 h-16 mr-2 rounded-full border-2 border-gray-300 border-t-transparent animate-spin"></div>
-                                                                    )
-                                                                }
-                                                            </div>
-                                                        )}
+                                                        }
                                                     </div>
                                                 </div>
                                             </div>

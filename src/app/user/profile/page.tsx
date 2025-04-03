@@ -324,7 +324,16 @@ export default function Profile() {
         }
         return response.json()
       }).then(() => {
-        updateUserInfo(setUserInfoState({}))
+        updateUserInfo(setUserInfoState({
+          email: "",
+          username: "",
+          firstname: "",
+          middlename: "",
+          lastname: "",
+          credits: 0,
+          uid: "",
+          subscription: -1
+      }))
         router.push("/")
 
       }).catch((error) => {

@@ -7,11 +7,26 @@ import db from "@/db/db";
 
 const openai = new OpenAI();
 
-const modeContent = new Map<string, string>()
-modeContent.set("Normal", "Create a balanced photograph with natural lighting and realistic proportions. Use standard photography techniques with moderate contrast and depth. Colors should appear true-to-life with natural saturation. The subject is ")
-modeContent.set("Cartoon", "Generate a cartoon illustration with bold black outlines of varying thickness. Use flat, vibrant colors with minimal gradients. Exaggerate key features while simplifying details. Show expressive facial features and playful proportions with larger heads/eyes. The scene depicts ")
-modeContent.set("Pixel", "Design a pixel art image within a limited resolution grid (64x64). Use a restricted color palette of 16 colors maximum. Create deliberate blocky shapes with clear pixel definition. Implement dithering techniques for gradients. The composition shows ")    
-modeContent.set("Realistic", "Render a photorealistic image with complex lighting effects including highlights, reflections, and accurate shadows. Include subtle texture variations across all surfaces. Apply accurate color theory with nuanced transitions between hues. Maintain precise anatomical proportions and perspective. The scene features ")
+const MODES = {
+    STICKER: 'Sticker',
+    PIXEL: 'Pixel',
+    VECTOR: 'Vector'
+} as const
+type PromptMode = typeof MODES[keyof typeof MODES];
+const promptTemplates: Record<PromptMode, (prompt: string) => string> = {
+    [MODES.STICKER]: (prompt) => 
+        `A high-quality **vector sticker** icon of **${prompt}**, **4K quality** with high resolution without unnecessary extra details. designed with a bold outline and a clean white border. The sticker should have a flat, minimalistic appearance with no shadows, gradients, or extra color outside the white border. The background must be fully white. Ensure the design is crisp and well-defined for use as a sticker. DO NOT add any background or additional elements—keep it as an isolated icon. just use it AS-IS.`,
+    [MODES.PIXEL]: (prompt) => 
+        `Design a **pixel art icon** of **${prompt}**, in **4K quality** with high resolution and clean pixel rendering. Keep the design **simple and iconic**, without unnecessary extra details and fully white background. Use **proper lighting and contrast** to enhance clarity while maintaining a **true pixel art aesthetic**. Ensure the subject is instantly recognizable and visually appealing. DO NOT add any background or additional elements—keep it as an isolated icon. just use it AS-IS.`,
+    [MODES.VECTOR]: (prompt) =>
+        `A clean and precise **vector icon** of **${prompt}**, **4K quality** with high resolution without unnecessary extra details. designed with sharp lines and a flat, minimalistic style. It must be made with polygons. The icon should use a limited color palette with no gradients, shadows, or unnecessary details. Ensure a bold, well-defined outline for clarity and scalability. The background should be fully white. DO NOT add any background or additional elements—keep it as an isolated icon. just use it AS-IS.`,
+}
+
+const formatPrompt = (mode: string, prompt: string): string => {
+    return (Object.values(MODES) as string[]).includes(mode)
+        ? promptTemplates[mode as PromptMode](prompt)
+        : prompt;
+}
 
 export async function POST(req: NextRequest) {
     try {
@@ -43,24 +58,24 @@ export async function POST(req: NextRequest) {
                 uid: decodedToken.uid
             }
         })
-        if(userAccount && userAccount.credits <= 1) {
-            return NextResponse.json({
-                success: 0,
-                msg: "Insufficient funds"
-            },
-            {
-                status: 409
-            })
-        }
+        // if(userAccount && userAccount.credits <= 1) {
+        //     return NextResponse.json({
+        //         success: 0,
+        //         msg: "Insufficient funds"
+        //     },
+        //     {
+        //         status: 409
+        //     })
+        // }
         console.log({
-            prompt: modeContent.get(mode) + prompt,
+            prompt: formatPrompt(mode, prompt),
             model: model,
             quality: quality,
             size: size,
             style: style
         })
         const openaiRequest: ImageGenerateParams = {
-            prompt: modeContent.get(mode) + prompt,
+            prompt: formatPrompt(mode, prompt),
             model: model,
             n: 1,
             quality: quality,
@@ -68,30 +83,22 @@ export async function POST(req: NextRequest) {
             style: style,
         }
         try {
-            await db.account.update({
-                where: {
-                    uid: decodedToken.uid
-                },
-                data: {
-                    credits: { decrement: 1 }
-                }
-            })
             const image = await openai.images.generate(openaiRequest)
             if(image) {
                 console.log(image)
-                return NextResponse.json({
-                    success: 1,
-                    Images: image
-                })
-            } else {
                 await db.account.update({
                     where: {
                         uid: decodedToken.uid
                     },
                     data: {
-                        credits: { increment: 1 }
+                        credits: { decrement: 2 }
                     }
                 })
+                return NextResponse.json({
+                    success: 1,
+                    url: image.data[0].url
+                })
+            } else {
                 return NextResponse.json({
                     success: 0,
                     msg: "Error with image generation"
