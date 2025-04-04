@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { setPopupState } from "../state/popup/popup"
 import { useDispatch } from "react-redux"
@@ -84,27 +84,58 @@ export default function AuthPopup() {
     //     }
     // }
 
+    useEffect(() => {
+        console.log("Checking for redirect result...");
+        
+        getRedirectResult(auth)
+          .then(async (result) => {
+            console.log("Redirect result:", result);
+            
+            if (result) {
+              const credential = GoogleAuthProvider.credentialFromResult(result);
+              console.log("Got credential:", credential);
+              
+              // Send credential to your API
+              try {
+                const response = await fetch("/api/test", {
+                  method: "POST",
+                  body: JSON.stringify(credential),
+                  headers: {
+                    "Content-Type": "application/json"
+                  }
+                });
+                console.log("API response:", await response.json());
+              } catch (error) {
+                console.error("API call failed:", error);
+              }
+            } else {
+              console.log("No redirect result found");
+            }
+          })
+          .catch((error) => {
+            console.error("Error getting redirect result:", error);
+          });
+      }, []);
+
     const googleAuth = async () => {
         try {
-            setProcess(true)
-            let userCredential = null
+            setProcess(true);
+            console.log("Starting Google sign-in redirect...");
+            await signInWithRedirect(auth, googleProvider);
+            // Note: Code after this line won't execute until after the redirect cycle completes
+        } catch(error) {
+            console.log("Google sign-in error:", error);
+            setProcess(false);
+        }
+    };
+
+    // const googleAuth = async () => {
+    //     try {
+    //         setProcess(true)
+            // let userCredential = null
             // if(window.screen.width < 500) {
-                userCredential = await signInWithRedirect(auth, googleProvider)
-                getRedirectResult(auth).then(async (result) => {
-                    if(result) {
-                        const credential = GoogleAuthProvider.credentialFromResult(result)
-                        await fetch("/api/test", 
-                            {
-                                method: "POST",
-                                body: JSON.stringify(credential),
-                                headers: 
-                                {
-                                    "Content-Type": "application/json"
-                                }
-                            }
-                        )
-                    }
-                })
+            // console.log("Hi")
+            //     await signInWithRedirect(auth, googleProvider)
             // } else {
             //     userCredential = await signInWithPopup(auth, googleProvider)
             // }
@@ -138,11 +169,11 @@ export default function AuthPopup() {
             // }
             // setVisibility(setPopupState())
             // redirect("/home")
-        } catch(Error) {
-            console.log(Error)
-            setProcess(false)
-        }
-    }
+    //     } catch(Error) {
+    //         console.log(Error)
+    //         setProcess(false)
+    //     }
+    // }
 
 return (
     <>
