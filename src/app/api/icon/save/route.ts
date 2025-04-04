@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
             });
         });
         
-        const uniqueKey = `${Date.now()}-${path.basename(dir)}`
+        const uniqueKey = `${Date.now()}`
         const fileContent = await fs.promises.readFile(dir)
         
         const command = new PutObjectCommand({

@@ -9,9 +9,12 @@ import { usePathname } from "next/navigation"
 import { useSelector } from "react-redux"
 import { RootState } from "@/state/store"
 import AuthPopup from "./Authpopup"
-import { setPopupState } from "@/state/popup/popup"
+// import { setPopupState } from "@/state/popup/popup"
 import { setUserInfoState } from "@/state/userData/userData"
 import userInfo from "@/types/userInfo"
+import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth"
+import { auth } from "@/utils/firebaseClient"
+import { redirect } from "next/navigation"
 
 export default function Navbar() {
     const popupVisibility: boolean = useSelector((state: RootState) => {
@@ -26,7 +29,7 @@ export default function Navbar() {
     const section = usePathname().split("/")[1]
     // console.log(section)
 
-    const setVisibility = useDispatch()
+    // const setVisibility = useDispatch()
     const setUserInfo = useDispatch()
 
     const navItems = [
@@ -70,6 +73,41 @@ export default function Navbar() {
             console.log(error)
         }
     }
+
+      const googleAuth = async () => {
+          try {
+              const provider = new GoogleAuthProvider()
+              signInWithRedirect(auth, provider).then(async (userCredential) => {
+                  console.log(userCredential)
+                  const credential = GoogleAuthProvider.credentialFromResult(userCredential)
+                  console.log(credential)
+                  // if(credential) {
+                  //     await fetch("/api/test", 
+                  //         {
+                  //             method: "POST",
+                  //             body: JSON.stringify({
+                  //                 email: userCredential.user.email,
+                  //                 uid: userCredential.user.uid,
+                  //                 accessToken: credential.accessToken,
+                  //                 refreshToken: userCredential.user.refreshToken
+                  //             }),
+                  //             headers: { "Content-Type": "application/json" }
+                  //         }
+                  //     ).then((response) => {
+                  //         if(!response.ok) {
+                  //             throw new Error("Network response was not ok")
+                  //         }
+                  //         return response.json()
+                  //     }).then((data) => {
+                  //         console.log(data)
+                  //     })
+                  // }
+                  redirect("/home")
+              })
+          } catch(Error) {
+              console.log(Error)
+          }
+      }
 
     useEffect(() => {
         checkSession()
@@ -132,7 +170,7 @@ export default function Navbar() {
                     ) : (
                       <div className="hidden sm:flex items-center space-x-3">
                         <button
-                          onClick={() => setVisibility(setPopupState())}
+                          onClick={() => googleAuth()}
                           className="py-2 px-6 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-500/20"
                         >
                           Sign up
@@ -201,8 +239,7 @@ export default function Navbar() {
                     {!userInfo.firstname && (
                       <div className="flex flex-col space-y-2 py-4 mt-2 border-t border-[#1F2937]">
                         <button onClick={() => {
-                          setMobileMenuOpen(false)
-                          setVisibility(setPopupState())
+                          googleAuth()
                         }}
                          className="w-full py-2 px-4 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-500/20">
                           Sign up

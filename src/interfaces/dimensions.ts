@@ -9,9 +9,8 @@ const dall2: dimension = {
 }
 
 const dall3: dimension = {
-    "small": "1024x1024",
-    "medium": "1024x1792",
-    "large": "1792x1024"
+    "medium": "1024x1024",
+    "large": "1024x1792",
 }
 
 export { dall2, dall3 }

@@ -23,7 +23,7 @@ export default function AuthPopup() {
     const [showSignupPassword, setShowSignupPassword] = useState(false)
     const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false)
     const [showSigninPassword, setShowSigninPassword] = useState(false)
-    const getUserInfo = useGetUserInfo()
+    const [getUserInfo, getUserIcons] = useGetUserInfo()
 
     const signupCall = async () => {
         if(confirmPassword !== password) {
@@ -49,6 +49,7 @@ export default function AuthPopup() {
                 return
             }
             getUserInfo()
+            getUserIcons()
             setVisibility(setPopupState())
             setProcess(false)
         } catch(error) {
@@ -75,6 +76,7 @@ export default function AuthPopup() {
                 return
             }
             getUserInfo()
+            getUserIcons()
             setVisibility(setPopupState())
             setProcess(false)
         } catch(error) {

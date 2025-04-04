@@ -1,9 +1,9 @@
 "use client"
 
-// import { dall2, dall3 } from "../../interfaces/dimensions"
+import { dall2, dall3 } from "../../interfaces/dimensions"
 import { useState } from "react"
 import { useSelector } from "react-redux";
-import { Crown, Download, Save, X, Trash2, Info, Sparkles, Lock } from "lucide-react";
+import { Crown, Download, X, Trash2, Info, Sparkles } from "lucide-react";
 import { RootState } from "@/state/store";
 import { useDispatch } from "react-redux";
 import { setPopupState } from "@/state/popup/popup";
@@ -20,10 +20,8 @@ export default function Home() {
     const [prompt, setPrompt] = useState("")
     const [error, setError] = useState("")
     const [imageLink, setImageLink] = useState("")
-    const [saved, setSaved] = useState(false)
     const [subspopup, setSubspopup] = useState(false)
     const [generating, setGenerating] = useState(false)
-    const [saving, setSaving] = useState(false)
     const [mode, setMode] = useState("Pixel")
 
     const subscription: number = useSelector((state: RootState) => {
@@ -67,10 +65,10 @@ export default function Home() {
                     body: JSON.stringify({
                         prompt: prompt,
                         mode: mode,
-                        model: "dall-e-3",
+                        model: quality === "hd" ? "dall-e-3" : "dall-e-2",
                         quality: quality,
-                        // size: dall2[dimension],
-                        size: "1024x1024",
+                        size: quality === "hd" ? dall3[dimension] : dall2[dimension],
+                        // size: "1024x1024",
                         style: "natural",
                     })
                 }
@@ -88,37 +86,6 @@ export default function Home() {
             console.log(error)
         }
         setGenerating(false)
-    }
-
-    const handleSave = async (imageLink: string) => {
-        if (!saved) {
-            try {
-                setSaving(true)
-                await fetch("/api/icon/save",
-                    {
-                        method: "POST",
-                        body: JSON.stringify({
-                            url: imageLink
-                        }),
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    }
-                ).then((res) => {
-                    return res.json()
-                }).then(data => {
-                    if (!data.success) {
-                        throw new Error(JSON.stringify(data.msg))
-                    } else {
-                        setSaved(true)
-                    }
-                    setSaving(false)
-                })
-            } catch (err) {
-                console.log(err)
-                setSaving(false)
-            }
-        }
     }
 
     return (
@@ -192,7 +159,7 @@ export default function Home() {
                                                     Preview
                                                 </h2>
                                                 <div className="flex gap-2">
-                                                    <button
+                                                    {/* <button
                                                         onClick={() =>  imageLink && handleSave(imageLink)}
                                                         className={`p-2 rounded-lg transition-all duration-300 ${saved
                                                             ? "bg-green-500/20 text-green-400"
@@ -202,7 +169,7 @@ export default function Home() {
                                                         {   saving ? <div className="w-4 h-4 rounded-full border-2 border-blue-700 border-l-transparent animate-spin"></div>
                                                             : <Save size={18} />
                                                         }
-                                                    </button>
+                                                    </button> */}
                                                     <button
                                                         onClick={() => imageLink && window.open(imageLink, "_blank")}
                                                         className="p-2 bg-[#1E293B] hover:bg-[#2D3B4F] rounded-lg transition-all duration-300 text-gray-400 hover:text-white"
@@ -268,8 +235,8 @@ export default function Home() {
                                                             HD
                                                         </button>
                                                         {subscription < 1 && (
-                                                            <div onClick={() => { setSubspopup(true) }} className="absolute inset-0 flex items-center justify-center hover:cursor-pointer">
-                                                                <Lock className="w-4 h-4 text-gray-400" />
+                                                            <div onClick={() => { setSubspopup(true) }} className="bg-balck opacity-50 absolute inset-0 flex items-center justify-end pr-4 hover:cursor-pointer">
+                                                                
                                                             </div>
                                                         )}
                                                     </div>
@@ -280,24 +247,30 @@ export default function Home() {
                                             <div className="relative">
                                                 <label className="text-gray-400 text-sm font-medium mb-2 block">Dimension</label>
                                                 <div className="grid grid-cols-3 gap-2 bg-[#0A0F16] p-1 rounded-lg">
-                                                    {["small", "medium", "large"].map((size, index) => (
-                                                        <div key={size} className="relative">
-                                                            <button
-                                                                onClick={() => setDimension(size)}
-                                                                className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${dimension === size
-                                                                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                    : "text-gray-400 hover:text-white"
-                                                                    } ${subscription < index && subscription !== -1 ? "opacity-50" : ""}`}
-                                                            >
-                                                                {size}
-                                                            </button>
-                                                            {subscription < index && size !== "small" && (
-                                                                <div onClick={() => { setSubspopup(true) }} className="hover:cursor-pointer absolute inset-0 flex items-center justify-center">
-                                                                    <Lock className="w-4 h-4 text-gray-400" />
+                                                    {["small", "medium", "large"].map((size, index) => {
+                                                        if(quality === "hd" && size === "small") {
+                                                            return null
+                                                        } else {
+                                                            return (
+                                                                <div key={size} className="relative w-full">
+                                                                    <button
+                                                                        onClick={() => setDimension(size)}
+                                                                        className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${dimension === size
+                                                                            ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                            : "text-gray-400 hover:text-white"
+                                                                            } ${subscription < index && subscription !== -1 ? "opacity-50" : ""}`}
+                                                                    >
+                                                                        {size}
+                                                                    </button>
+                                                                    {subscription < index && size !== "small" && (
+                                                                        <div onClick={() => { setSubspopup(true) }} className="bg-black opacity-50 hover:cursor-pointer absolute inset-0 flex items-center justify-end pr-2">
+                                                                            
+                                                                        </div>
+                                                                    )}
                                                                 </div>
-                                                            )}
-                                                        </div>
-                                                    ))}
+                                                            )
+                                                        }
+                                                    })}
                                                 </div>
                                             </div>
 
@@ -349,6 +322,9 @@ export default function Home() {
                             </div>
                         </div>
                     </div>
+                </div>
+                <div className="w-full h-96">
+
                 </div>
             </div>
         </>
