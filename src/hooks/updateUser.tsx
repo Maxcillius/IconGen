@@ -12,13 +12,11 @@ const useGetUserData = () => {
                 headers: { "Content-Type": "application/json" }
             });
 
-            if (!response.ok) {
-                throw new Error("Error fetching user info");
-            }
-
             const data = await response.json();
 
-            if (!data.success) return;
+            if (!data.success) {
+              throw new Error(data.msg)
+            }
 
             dispatch(setUserInfoState({
                 email: data.msg.email,
@@ -31,12 +29,11 @@ const useGetUserData = () => {
                 subscription: data.msg.subscription
             }));
         } catch (error) {
-            console.error("Failed to fetch user info:", error);
+            console.error(error);
         }
     }
 
     const getUserIcons = async () => {
-        // console.log("fetching")
         await fetch("/api/icon/fetch",
           {
             method: "GET",
@@ -48,16 +45,15 @@ const useGetUserData = () => {
         ).then((response) => {
           return response.json()
         }).then((data) => {
-          // console.log(data.contents)
-          // if(!data.contents) redirect("/")
-          // console.log(data)
+          if(!data.contents) {
+            return
+          }
           const array: [{key: string, url: string}] = data.contents.map((obj: { key: string, url: string }) => {
             return {
                 key: obj.key,
                 url: obj.url
             }
           })
-          // console.log(array)
           dispatch(setUserIconsState(array))
         })
       }

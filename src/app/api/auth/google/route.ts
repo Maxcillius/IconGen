@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/db/db";
-import { cookies } from "next/headers";
+import { cookies } from "next/headers"
+import admin from "@/utils/firebaseAdmin";
 
 export async function POST(req: NextRequest) {
-    const { email, uid, accessToken, refreshToken } = await req.json()
+    const { email, uid, accessToken, refreshToken, idToken } = await req.json()
     try {
         const isExist = await db.user.findUnique({
             where: {
@@ -44,10 +45,13 @@ export async function POST(req: NextRequest) {
                 }
             })
         }
+        const expiresIn = 1000 * 60 * 60 *24 * 7 * 2 // 2 weeks
         const cookieStore = await cookies()
+        // console.log(idToken)
+        const createCookie = await admin.auth().createSessionCookie( idToken, { expiresIn })
         cookieStore.set({
             name: "sessionKey",
-            value: accessToken,
+            value: createCookie,
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",

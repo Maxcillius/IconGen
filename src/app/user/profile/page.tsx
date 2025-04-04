@@ -8,7 +8,7 @@ import { RootState } from "@/state/store"
 import { useRouter } from "next/navigation"
 import { setUserInfoState } from "@/state/userData/userData"
 import { useDispatch } from "react-redux"
-import useGetUserInfo from "@/app/hooks/updateUser"
+import useGetUserInfo from "@/hooks/updateUser"
 // import { auth } from "@/utils/firebaseClient"
 // import { signOut } from "firebase/auth"
 

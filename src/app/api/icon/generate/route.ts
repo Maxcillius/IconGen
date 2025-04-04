@@ -61,7 +61,9 @@ export async function POST(req: NextRequest) {
                 uid: decodedToken.uid
             }
         })
-        if(userAccount && userAccount.credits < 2) {
+        if(userAccount
+             && ((model === "dall-e-2" && userAccount.credits < 1)
+             || (model === "dall-e-3" && userAccount.credits < 2))) {
             return NextResponse.json({
                 success: 0,
                 msg: "Insufficient funds"
@@ -94,7 +96,7 @@ export async function POST(req: NextRequest) {
                         uid: decodedToken.uid
                     },
                     data: {
-                        credits: { decrement: 2 }
+                        credits: { decrement: model === "dall-e-2" ? 1 : 2 }
                     }
                 })
                 const response = await axios({

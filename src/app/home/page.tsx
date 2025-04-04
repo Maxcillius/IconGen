@@ -68,7 +68,6 @@ export default function Home() {
                         model: quality === "hd" ? "dall-e-3" : "dall-e-2",
                         quality: quality,
                         size: quality === "hd" ? dall3[dimension] : dall2[dimension],
-                        // size: "1024x1024",
                         style: "natural",
                     })
                 }
