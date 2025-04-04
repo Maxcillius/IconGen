@@ -4,24 +4,27 @@ import path from "path"
 import fs from "fs"
 import s3 from "@/utils/s3"
 import { PutObjectCommand } from "@aws-sdk/client-s3"
-import { decode } from "next-auth/jwt"
 import { cookies } from "next/headers"
 import os from "os"
-
-const secret = process.env.NEXTAUTH_SECRET as string
+import admin from "@/utils/firebaseAdmin"
 
 export async function POST(req: NextRequest) {
     const { url } = await req.json()
     const cookieStore = await cookies();
-    const sessionTokenCookie = cookieStore.get("next-auth.session-token")
+    const sessionTokenCookie = cookieStore.get("sessionKey")
     const sessionToken = sessionTokenCookie?.value
+    if(!sessionToken) {
+        return NextResponse.json({
+            success: 0,
+            msg: "No session token found"
+        },
+        {
+            status: 401
+        })
+    }
 
-    const decoded = await decode({
-        token: sessionToken,
-        secret: secret
-    })
-
-    if(!decoded) {
+    const decodedToken = await admin.auth().verifySessionCookie(sessionToken)
+    if(!decodedToken) {
         return NextResponse.json({
             success: 0,
             msg: "Unauthorized"
@@ -44,7 +47,7 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        const fileName = `${decoded.sub}-${Date.now().toString()}.png`
+        const fileName = `${decodedToken.uid}-${Date.now().toString()}.png`
         const dir = path.join(`/home/${os.userInfo().username}/`, fileName)
         
         const response = await axios({
@@ -75,7 +78,7 @@ export async function POST(req: NextRequest) {
         
         const command = new PutObjectCommand({
             Bucket: process.env.BUCKET_NAME as string,
-            Key: `userIcons/${decoded.sub}/${uniqueKey}`,
+            Key: `userIcons/${decodedToken.uid}/${uniqueKey}`,
             Body: fileContent
         });
         

@@ -193,7 +193,7 @@ export default function Home() {
                                                 </h2>
                                                 <div className="flex gap-2">
                                                     <button
-                                                        onClick={() => imageLink && handleSave(imageLink)}
+                                                        onClick={() =>  imageLink && handleSave(imageLink)}
                                                         className={`p-2 rounded-lg transition-all duration-300 ${saved
                                                             ? "bg-green-500/20 text-green-400"
                                                             : "bg-[#1E293B] hover:bg-[#2D3B4F] text-gray-400 hover:text-white"
