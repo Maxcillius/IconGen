@@ -1,6 +1,6 @@
 "use client"
 
-import { dall2, dall3 } from "../../interfaces/dimensions"
+// import { dall2, dall3 } from "../../interfaces/dimensions"
 import { useState } from "react"
 import { useSelector } from "react-redux";
 import { Crown, Download, Save, X, Trash2, Info, Sparkles, Lock } from "lucide-react";
@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { setPopupState } from "@/state/popup/popup";
 import { StaticImageData } from "next/image"
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link";
 import Sticker from "@/images/sticker.png"
 import Pixel from "@/images/pixel.png"
 import Vector from "@/images/vector.png"
@@ -23,6 +23,7 @@ export default function Home() {
     const [saved, setSaved] = useState(false)
     const [subspopup, setSubspopup] = useState(false)
     const [generating, setGenerating] = useState(false)
+    const [saving, setSaving] = useState(false)
     const [mode, setMode] = useState("Pixel")
 
     const subscription: number = useSelector((state: RootState) => {
@@ -44,7 +45,10 @@ export default function Home() {
     const setVisibility = useDispatch()
 
     const generateIcon = async () => {
-        if(subscription === -1) {
+        if(window.screen.width < 500) {
+            window.scrollTo({ top: 550, behavior: "smooth" })
+        }
+        if (subscription === -1) {
             console.log(subscription)
             setVisibility(setPopupState())
             return
@@ -73,14 +77,14 @@ export default function Home() {
             ).then(response => {
                 return response.json()
             }).then(data => {
-                if(data.success === 0) {
+                if (data.success === 0) {
                     setError(data.msg)
                     setGenerating(false)
                     return
                 }
                 setImageLink(data.url)
             })
-        } catch(error) {
+        } catch (error) {
             console.log(error)
         }
         setGenerating(false)
@@ -89,6 +93,7 @@ export default function Home() {
     const handleSave = async (imageLink: string) => {
         if (!saved) {
             try {
+                setSaving(true)
                 await fetch("/api/icon/save",
                     {
                         method: "POST",
@@ -107,9 +112,11 @@ export default function Home() {
                     } else {
                         setSaved(true)
                     }
+                    setSaving(false)
                 })
             } catch (err) {
                 console.log(err)
+                setSaving(false)
             }
         }
     }
@@ -137,13 +144,13 @@ export default function Home() {
                                         {
                                             modes.map((style) => {
                                                 return (
-                                                    <div key={style.id} onClick={() => {setMode(style.id)}} className="relative hover:cursor-pointer">
-                                                        <div className={`absolute w-full h-full rounded-xl ${ mode === style.id ? "border-4 border-blue-600" : ""}`}></div>
-                                                            <Image src={modeImages[style.id]} alt="icon" 
+                                                    <div key={style.id} onClick={() => { setMode(style.id) }} className="relative hover:cursor-pointer">
+                                                        <div className={`absolute w-full h-full rounded-xl ${mode === style.id ? "border-4 border-blue-600" : ""}`}></div>
+                                                        <Image src={modeImages[style.id]} alt="icon"
                                                             className={`w-28 h-28 rounded-xl`}
-                                                            >
-                                                            
-                                                            </Image>
+                                                        >
+
+                                                        </Image>
                                                     </div>
                                                 )
                                             })
@@ -166,7 +173,7 @@ export default function Home() {
                             {/* Error Message */}
                             {error && (
                                 <div className="bg-red-900/20 border border-red-800/50 rounded-xl p-4 animate-fade-in">
-                                    <p className="text-red-400 flex items-center gap-2">
+                                    <p className="text-red-400 flex items-center gap-2 text-xs lg:text-base">
                                         <Info size={16} />
                                         {error}
                                     </p>
@@ -188,11 +195,13 @@ export default function Home() {
                                                     <button
                                                         onClick={() => imageLink && handleSave(imageLink)}
                                                         className={`p-2 rounded-lg transition-all duration-300 ${saved
-                                                                ? "bg-green-500/20 text-green-400"
-                                                                : "bg-[#1E293B] hover:bg-[#2D3B4F] text-gray-400 hover:text-white"
+                                                            ? "bg-green-500/20 text-green-400"
+                                                            : "bg-[#1E293B] hover:bg-[#2D3B4F] text-gray-400 hover:text-white"
                                                             }`}
                                                     >
-                                                        <Save size={18} />
+                                                        {   saving ? <div className="w-4 h-4 rounded-full border-2 border-blue-700 border-l-transparent animate-spin"></div>
+                                                            : <Save size={18} />
+                                                        }
                                                     </button>
                                                     <button
                                                         onClick={() => imageLink && window.open(imageLink, "_blank")}
@@ -202,13 +211,13 @@ export default function Home() {
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div className="relative bg-[#0A0F16] rounded-xl border border-[#1F2937] p-8 flex items-center justify-center">
+                                            <div className="relative bg-[#0A0F16] rounded-xl border border-[#1F2937] p-4 lg:p-8 flex items-center justify-center">
                                                 {
                                                     generating && (
                                                         <>
                                                             <div className="absolute w-64 h-64 rounded-full border-8 border-blue-700 border-l-transparent animate-spin"></div>
                                                         </>
-                                                )}
+                                                    )}
                                                 <div className="w-64 h-64 rounded-full bg-gradient-to-br from-[#1E293B] to-[#111827] p-1 shadow-2xl shadow-black/40">
                                                     <div className="w-full h-full rounded-full bg-[#0A0F16] flex items-center justify-center">
                                                         {imageLink &&
@@ -241,9 +250,9 @@ export default function Home() {
                                                 <div className="grid grid-cols-2 gap-2 bg-[#0A0F16] p-1 rounded-lg">
                                                     <button
                                                         onClick={() => setQuality("standard")}
-                                                        className={`py-2 px-4 rounded-md transition-all duration-300 ${quality === "standard"
-                                                                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                : "text-gray-400 hover:text-white"
+                                                        className={`py-2 px-4 text-xs lg:text-base rounded-md transition-all duration-300 ${quality === "standard"
+                                                            ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                            : "text-gray-400 hover:text-white"
                                                             }`}
                                                     >
                                                         Standard
@@ -251,9 +260,9 @@ export default function Home() {
                                                     <div className="relative">
                                                         <button
                                                             onClick={() => setQuality("hd")}
-                                                            className={`w-full py-2 px-4 rounded-md transition-all duration-300 ${quality === "hd"
-                                                                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                    : "text-gray-400 hover:text-white"
+                                                            className={`w-full py-2 px-4 text-xs lg:text-base rounded-md transition-all duration-300 ${quality === "hd"
+                                                                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                : "text-gray-400 hover:text-white"
                                                                 } ${subscription < 1 ? "opacity-50" : ""}`}
                                                         >
                                                             HD
@@ -275,15 +284,15 @@ export default function Home() {
                                                         <div key={size} className="relative">
                                                             <button
                                                                 onClick={() => setDimension(size)}
-                                                                className={`w-full py-2 px-4 rounded-md capitalize transition-all duration-300 ${dimension === size
-                                                                        ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                        : "text-gray-400 hover:text-white"
+                                                                className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${dimension === size
+                                                                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                    : "text-gray-400 hover:text-white"
                                                                     } ${subscription < index && subscription !== -1 ? "opacity-50" : ""}`}
                                                             >
                                                                 {size}
-                                                            </button>   
+                                                            </button>
                                                             {subscription < index && size !== "small" && (
-                                                                <div onClick={() => {setSubspopup(true)}} className="hover:cursor-pointer absolute inset-0 flex items-center justify-center">
+                                                                <div onClick={() => { setSubspopup(true) }} className="hover:cursor-pointer absolute inset-0 flex items-center justify-center">
                                                                     <Lock className="w-4 h-4 text-gray-400" />
                                                                 </div>
                                                             )}
@@ -295,7 +304,7 @@ export default function Home() {
                                             {/* Generate Button */}
                                             <button
                                                 onClick={generateIcon}
-                                                className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
+                                                className="w-full py-3 text-sm lg:text-base px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
                                             >
                                                 <Sparkles size={18} />
                                                 Generate Icon
@@ -327,11 +336,11 @@ export default function Home() {
                                         value={prompt}
                                         onChange={(e) => setPrompt(e.target.value)}
                                         placeholder="Describe your icon in detail (e.g., 'A modern tech logo with blue and purple gradient, minimalist style with abstract shapes')"
-                                        className="w-full h-32 bg-[#0A0F16] text-gray-300 placeholder-gray-600 rounded-xl border border-[#1F2937] p-4 focus:outline-none focus:border-blue-500 transition-all duration-300 resize-none"
+                                        className="w-full text-xs lg:text-base h-32 bg-[#0A0F16] text-gray-300 placeholder-gray-600 rounded-xl border border-[#1F2937] p-4 focus:outline-none focus:border-blue-500 transition-all duration-300 resize-none"
                                     />
                                     <div className="mt-3 flex items-center justify-between text-sm">
-                                        <span className="text-gray-500">{prompt.length}/500 characters</span>
-                                        <span className="text-gray-500 flex items-center gap-1">
+                                        <span className="text-gray-500 text-[10px] lg:text-base">{prompt.length}/500 characters</span>
+                                        <span className="text-gray-500 flex items-center gap-1 text-[7px] lg:text-base">
                                             <Info size={14} />
                                             Pro tip: Be specific about colors, style, and mood
                                         </span>
@@ -348,31 +357,33 @@ export default function Home() {
 
 function SubscriptionPopup({ close }: { close: React.Dispatch<React.SetStateAction<boolean>> }) {
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-[#111827] w-96 rounded-2xl border border-[#1F2937] shadow-2xl">
-                <div className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg shadow-lg shadow-blue-500/20">
-                                <Crown size={20} className="text-white" />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-[#111827] w-full max-w-[384px] rounded-2xl border border-[#1F2937] shadow-2xl">
+                <div className="p-4 sm:p-6">
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="p-1.5 sm:p-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg shadow-lg shadow-blue-500/20">
+                                <Crown size={18} className="text-white sm:w-5 sm:h-5" />
                             </div>
-                            <h2 className="text-xl font-bold text-white">Upgrade to Pro</h2>
+                            <h2 className="text-lg sm:text-xl font-bold text-white">Upgrade to Pro</h2>
                         </div>
                         <button
                             onClick={() => close(false)}
                             className="text-gray-500 hover:text-gray-400 transition-colors duration-300"
                         >
-                            <X size={20} />
+                            <X size={18} className="sm:w-5 sm:h-5" />
                         </button>
                     </div>
 
-                    <div className="space-y-6">
-                        <p className="text-gray-400">Unlock premium features and enhance your creative workflow!</p>
+                    <div className="space-y-4 sm:space-y-6">
+                        <p className="text-sm sm:text-base text-gray-400">
+                            Unlock premium features and enhance your creative workflow!
+                        </p>
 
-                        <div className="bg-[#0A0F16] rounded-xl p-4 border border-[#1F2937]">
-                            <ul className="space-y-3">
+                        <div className="bg-[#0A0F16] rounded-xl p-3 sm:p-4 border border-[#1F2937]">
+                            <ul className="space-y-2 sm:space-y-3">
                                 {["HD Quality Generation", "Larger Dimensions", "Priority Processing"].map((feature) => (
-                                    <li key={feature} className="flex items-center gap-3 text-gray-300">
+                                    <li key={feature} className="flex items-center gap-2 sm:gap-3 text-sm sm:text-base text-gray-300">
                                         <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
                                         {feature}
                                     </li>
@@ -380,11 +391,14 @@ function SubscriptionPopup({ close }: { close: React.Dispatch<React.SetStateActi
                             </ul>
                         </div>
 
-                        <div className="flex items-center justify-between">
-                            <span className="text-gray-500 text-sm">Starting at $4.59/mo</span>
-                            <Link href={"/pricing"} className="px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-500/20">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+                            <span className="text-xs sm:text-sm text-gray-500">Starting at $4.59/mo</span>
+                            <a
+                                href="/pricing"
+                                className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white text-center rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-500/20"
+                            >
                                 Upgrade Now
-                            </Link>
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -40,16 +40,16 @@ export default function App() {
               <div className="flex justify-center mb-8">
                 <Icons className="h-16 w-16 text-indigo-500" />
               </div>
-              <h1 className="text-5xl font-bold text-white mb-6">
+              <h1 className="text-3xl lg:text-5xl font-bold text-white mb-6">
                 Transform Your Ideas into{" "}
                 <TypewriterText text="Beautiful Icons" />
               </h1>
-              <p className="text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
+              <p className="text-xs lg:text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
                 Create stunning, customizable icons in seconds with our AI-powered platform.
                 Perfect for designers, developers, and creators.
               </p>
               <div className="flex gap-4 justify-center">
-                <Link href={"/home"} className="px-8 py-3 bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition flex items-center gap-2">
+                <Link href={"/home"} className="text-xs lg:text-base px-4 lg:px-8 py-3 bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition flex items-center gap-2">
                   Get Started <ArrowRight className="h-5 w-5" />
                 </Link>
               </div>
@@ -65,22 +65,22 @@ export default function App() {
                 <div className="bg-indigo-500/10 p-3 rounded-lg w-fit mb-4">
                   <Wand2 className="h-6 w-6 text-indigo-500" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-3">AI-Powered Generation</h3>
-                <p className="text-slate-300">Transform text descriptions into pixel-perfect icons using our advanced AI technology.</p>
+                <h3 className="text-md lg:text-xl font-semibold text-white mb-3">AI-Powered Generation</h3>
+                <p className="text-slate-300 text-sm lg:text-basw">Transform text descriptions into pixel-perfect icons using our advanced AI technology.</p>
               </div>
               <div className="bg-slate-700 p-8 rounded-xl">
                 <div className="bg-indigo-500/10 p-3 rounded-lg w-fit mb-4">
                   <Palette className="h-6 w-6 text-indigo-500" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-3">Customizable Styles</h3>
-                <p className="text-slate-300">Adjust colors, sizes, and styles to match your brand"s unique identity.</p>
+                <h3 className="text-md lg:text-xl font-semibold text-white mb-3">Customizable Styles</h3>
+                <p className="text-slate-300 text-sm lg:text-base">Adjust colors, sizes, and styles to match your brand"s unique identity.</p>
               </div>
               <div className="bg-slate-700 p-8 rounded-xl">
                 <div className="bg-indigo-500/10 p-3 rounded-lg w-fit mb-4">
                   <Code2 className="h-6 w-6 text-indigo-500" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-3">Developer Friendly</h3>
-                <p className="text-slate-300">Export icons in multiple formats with ready-to-use code snippets.</p>
+                <h3 className="text-md lg:text-xl font-semibold text-white mb-3">Developer Friendly</h3>
+                <p className="text-slate-300 text-sm lg:text-base">Export icons in multiple formats with ready-to-use code snippets.</p>
               </div>
             </div>
           </div>
@@ -94,7 +94,7 @@ export default function App() {
                 <Sparkles className="h-12 w-12 text-indigo-500" />
               </div>
               <h2 className="text-4xl font-bold text-white mb-4">Create Icons That Stand Out</h2>
-              <p className="text-xl text-slate-400">Explore what you can create with our platform</p>
+              <p className="text-sm px-10 lg:px-0 lg:text-xl text-slate-400">Explore what you can create with our platform</p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[...Array(6)].map((_, index) => (
@@ -116,11 +116,11 @@ export default function App() {
             <div className="flex justify-center mb-8">
               <Zap className="h-12 w-12 text-indigo-500" />
             </div>
-            <h2 className="text-4xl font-bold text-white mb-6">Ready to Transform Your Icons?</h2>
-            <p className="text-xl text-slate-400 mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">Ready to Transform Your Icons?</h2>
+            <p className="text-sm lg:text-xl px-10 lg:px-0 text-slate-400 mb-8">
               Join thousands of creators who trust our platform for their icon needs.
             </p>
-            <Link href={"/home"} className="px-8 py-3 flex-row justify-center bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition flex items-center gap-2 mx-auto">
+            <Link href={"/home"} className="text-xs lg:text-base px-8 py-3 flex-row justify-center bg-indigo-500 text-white rounded-lg font-semibold hover:bg-indigo-600 transition flex items-center gap-2 mx-auto">
               Get Started Now <ArrowRight className="h-5 w-5" />
             </Link>
           </div>

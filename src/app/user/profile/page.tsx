@@ -34,6 +34,7 @@ export default function Profile() {
     const [isLoading, setIsLoading] = useState(!userInfo)
 
     const fetchIcons = async () => {
+      console.log("fetching")
         await fetch("/api/icon/fetch", 
             {
                 method: "GET",
@@ -46,7 +47,8 @@ export default function Profile() {
             return response.json()
         }).then((data) => {
             // console.log(data.contents)
-            if(!data.contents) redirect("/")
+            // if(!data.contents) redirect("/")
+            console.log(data)
             data.contents.map((obj: {key: string, url: string}) => {
                 setIcons((prev) => [
                     ...prev, {
@@ -109,15 +111,15 @@ export default function Profile() {
               </div>
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">
+              <h1 className="text-xl lg:text-3xl font-bold text-white">
                 {userInfo?.firstname} {userInfo?.middlename} {userInfo?.lastname}
               </h1>
-              <p className="text-gray-400 mt-1">@{userInfo?.username}</p>
+              <p className="text-gray-400 mt-1 text-sm lg:text-base">@{userInfo?.username}</p>
             </div>
           </div>
           <div className="flex flex-row justify-end h-14">
             {alert && (
-                    <div className="flex flex-row justify-center text-red-600 mb-4">
+                    <div className="flex flex-row justify-center text-red-600 mb-4 text-xs lg:text-base">
                         {alert}
                     </div>
                 )
@@ -128,7 +130,7 @@ export default function Profile() {
             {["username", "email", "name"].map((field: string) => (
               <div
                 key={field}
-                className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6 transition-shadow hover:shadow-lg"
+                className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6 transition-shadow hover:shadow-lg text-sm lg:text-base"
               >
                 <label className="block text-gray-400 font-medium mb-2 capitalize">
                   {field}
@@ -136,13 +138,14 @@ export default function Profile() {
                 {isLoading ? (
                   <div className="h-8 bg-[#1F2937] rounded-xl animate-pulse" />
                 ) : (
-                  <div className="text-lg font-medium text-white">
-                    {field === "name"
-                      ? `${userInfo?.firstname}`
-                      : field === "email"
-                      ? userInfo?.email
-                      : userInfo?.username}
-                  </div>
+                  !isEdit &&
+                    <div className="text-xs lg:text-lg font-medium text-white">
+                        {field === "name"
+                          ? `${userInfo?.firstname}`
+                          : field === "email"
+                          ? userInfo?.email
+                          : userInfo?.username}
+                      </div>
                 )}
                 {
                   isEdit && field !== "email" && (
@@ -153,7 +156,7 @@ export default function Profile() {
                       }}
                       defaultValue={ field === "name" ? userInfo.firstname : userInfo.username}
                       type="text"
-                      className="mt-2 w-full bg-[#1F2937] text-white px-4 py-3 rounded-xl focus:outline-none"
+                      className="mt-2 w-full bg-[#1F2937] text-white px-4 py-2 lg:py-3 rounded-xl focus:outline-none text-xs lg:text-base"
                       placeholder={`Enter new ${field}`}
                     />
                   )
@@ -168,20 +171,20 @@ export default function Profile() {
                 <div className="flex gap-4">
                 <button onClick={() => (
                   updateData()
-                )} className="group relative px-6 py-3 bg-[#1F2937] rounded-xl overflow-hidden">
+                )} className="group relative px-4 py-2 lg:px-6 lg:py-3 bg-[#1F2937] rounded-xl overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-400 transition-transform duration-300 group-hover:translate-x-0 -translate-x-full"></div>
                   <span className="relative flex items-center font-medium">
                     {
                       changing ? (
-                        <>
+                        <div className="text-xs lg:text-base">
                           <span className="w-4 h-4 mr-2 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
                           Saving...
-                        </>
+                        </div>
                       ) : (
-                        <>
+                        <div className="text-xs lg:text-base">
                           {/* <Settings className="w-4 h-4 mr-2" /> */}
                           Save
-                        </>
+                        </div>
                       )
                     }
                   </span>
@@ -190,9 +193,9 @@ export default function Profile() {
                   setUsername("")
                   setName("")
                   setEdit(false)
-                }} className="group relative px-6 py-3 bg-[#1F2937] rounded-xl overflow-hidden">
+                }} className="group relative px-4 py-2 lg:px-6 lg:py-3 bg-[#1F2937] rounded-xl overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-400 transition-transform duration-300 group-hover:translate-x-0 -translate-x-full"></div>
-                  <span className="relative flex items-center font-medium">
+                  <span className="relative flex items-center font-medium text-xs lg:text-base">
                     cancel
                   </span>
                 </button>
@@ -200,18 +203,18 @@ export default function Profile() {
               ) : (
                 <button onClick={() => setEdit(true)} className="group relative px-6 py-3 bg-[#1F2937] rounded-xl overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 transition-transform duration-300 group-hover:translate-x-0 -translate-x-full"></div>
-                  <span className="relative flex items-center font-medium">
-                    <Settings className="w-4 h-4 mr-2" />
+                  <span className="relative flex items-center font-medium text-xs lg:text-base">
+                    <Settings className="lg:w-4 lg:h-4 w-3 h-3 mr-2" />
                     Edit Profile
                   </span>
                 </button>
               )
             }
             <button
-              onClick={() => handleSignOut()} className="group relative px-6 py-3 bg-[#1F2937] rounded-xl overflow-hidden">
+              onClick={() => handleSignOut()} className="group relative px-4 py-2 lg:px-6 lg:py-3 bg-[#1F2937] rounded-xl overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-400 transition-transform duration-300 group-hover:translate-x-0 -translate-x-full"></div>
-              <span className="relative flex items-center font-medium">
-                <LogOut className="w-4 h-4 mr-2" />
+              <span className="relative flex items-center font-medium text-xs lg:text-base">
+                <LogOut className="lg:w-4 lg:h-4 w-3 h-3 mr-2 text-xs lg:text-base" />
                 Log Out
               </span>
             </button>
@@ -221,7 +224,7 @@ export default function Profile() {
 
       const renderBilling = () => (
         <>
-          <h1 className="text-3xl font-bold text-white mb-8">Credits & Billing</h1>
+          <h1 className="text-xl lg:text-3xl font-bold text-white mb-8">Credits & Billing</h1>
           <div className="grid gap-8">
             <div className="bg-gradient-to-r from-blue-600 to-blue-400 rounded-2xl p-8">
               <div className="flex items-center justify-between">
@@ -349,20 +352,20 @@ export default function Profile() {
         <div className="min-h-screen bg-[#0A0F16] text-gray-200">
           <div className="grid grid-cols-12 min-h-screen pt-16">
             <div className="col-span-12 md:col-span-3 lg:col-span-2 bg-[#0D1219] border-r border-[#1F2937]">
-              <div className="sticky p-6 space-y-2">
+              <div className="p-6 space-y-2 flex flex-row gap-4 overflow-x-scroll scrollbar-hide lg:flex-col">
                 {sections.map((section) => (
                   <button
                     key={section.id}
                     onClick={() => setActiveSection(section.id)}
-                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-colors ${
+                    className={`w-full flex items-center text-xs lg:text-base justify-between px-4 py-3 rounded-xl transition-colors ${
                       activeSection === section.id
                         ? "bg-[#1F2937] text-white"
                         : "text-gray-400 hover:bg-[#1F2937]/50"
                     }`}
                   >
                     <div className="flex items-center space-x-3">
-                      <section.icon className="w-5 h-5" />
-                      <span className="font-medium">{section.label}</span>
+                      <section.icon className="w-3 h-3 lg:w-5 lg:h-5" />
+                      <span className="font-medium text-xs lg:text-base">{section.label}</span>
                     </div>
                     {activeSection === section.id && <ChevronRight className="w-4 h-4" />}
                   </button>
@@ -385,6 +388,9 @@ export default function Profile() {
                     ))
                 }
               </div>
+              <div className="w-full h-96">
+                
+              </div>
             </div>
           </div>
         </div>
@@ -393,20 +399,20 @@ export default function Profile() {
 
   const renderSecurity = () => (
     <>
-      <h1 className="text-3xl font-bold text-white mb-8">Security Settings</h1>
+      <h1 className="text-xl lg:text-3xl font-bold text-white mb-8">Security Settings</h1>
       <div className="space-y-6">
         <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Two-Factor Authentication</h3>
-          <p className="text-gray-400 mb-4">Add an extra layer of security to your account</p>
-          <button className="px-6 py-3 bg-[#1F2937] rounded-xl text-white font-medium hover:bg-[#2D3748] transition-colors">
+          <h3 className="text-md lg:text-lg font-semibold text-white mb-4">Two-Factor Authentication</h3>
+          <p className="text-gray-400 mb-4 text-sm lg:text-base">Add an extra layer of security to your account</p>
+          <button className="text-xs lg:text-base px-6 py-3 bg-[#1F2937] rounded-xl text-white font-medium hover:bg-[#2D3748] transition-colors">
             Enable 2FA
           </button>
         </div>
 
         <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Password</h3>
-          <p className="text-gray-400 mb-4">Change your password regularly to keep your account secure</p>
-          <button className="px-6 py-3 bg-[#1F2937] rounded-xl text-white font-medium hover:bg-[#2D3748] transition-colors">
+          <h3 className="text-md lg:text-lg font-semibold text-white mb-4">Password</h3>
+          <p className="text-gray-400 mb-4 text-sm lg:text-base">Change your password regularly to keep your account secure</p>
+          <button className="text-xs lg:text-base px-6 py-3 bg-[#1F2937] rounded-xl text-white font-medium hover:bg-[#2D3748] transition-colors">
             Change Password
           </button>
         </div>
@@ -445,13 +451,13 @@ export default function Profile() {
 
   const renderSettings = () => (
     <>
-      <h1 className="text-3xl font-bold text-white mb-8">Account Settings</h1>
+      <h1 className="text-lg lg:text-3xl font-bold text-white mb-8">Account Settings</h1>
       <div className="space-y-6">
         <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Notifications</h3>
+          <h3 className="text-md lg:text-lg font-semibold text-white mb-4">Notifications</h3>
           {["Email notifications", "Push notifications", "Monthly newsletter"].map((setting, index) => (
             <div key={index} className="flex items-center justify-between py-4">
-              <span className="text-gray-300">{setting}</span>
+              <span className="text-gray-300 text-sm lg:text-base">{setting}</span>
               <button className="w-12 h-6 bg-[#1F2937] rounded-full relative">
                 <div className="absolute left-1 top-1 w-4 h-4 bg-gray-400 rounded-full"></div>
               </button>
@@ -460,19 +466,19 @@ export default function Profile() {
         </div>
 
         <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Language & Region</h3>
+          <h3 className="text-md lg:text-lg font-semibold text-white mb-4">Language & Region</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-gray-400 mb-2">Language</label>
-              <select className="w-full bg-[#1F2937] text-white px-4 py-3 rounded-xl">
+              <label className="block text-gray-400 mb-2 text-sm lg:text-base">Language</label>
+              <select className="w-full bg-[#1F2937] text-white px-4 py-3 rounded-xl text-xs lg:text-base">
                 <option>English (US)</option>
                 <option>Spanish</option>
                 <option>French</option>
               </select>
             </div>
             <div>
-              <label className="block text-gray-400 mb-2">Time Zone</label>
-              <select className="w-full bg-[#1F2937] text-white px-4 py-3 rounded-xl">
+              <label className="block text-gray-400 mb-2 text-sm lg:text-base">Time Zone</label>
+              <select className="w-full bg-[#1F2937] text-white px-4 py-3 rounded-xl text-xs lg:text-base">
                 <option>Eastern Time (ET)</option>
                 <option>Pacific Time (PT)</option>
                 <option>UTC</option>
@@ -482,9 +488,9 @@ export default function Profile() {
         </div>
 
         <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Danger Zone</h3>
-          <p className="text-gray-400 mb-4">Once you delete your account, there is no going back.</p>
-          <button className="px-6 py-3 bg-red-500/10 text-red-400 rounded-xl font-medium hover:bg-red-500/20 transition-colors">
+          <h3 className="text-md lg:text-lg font-semibold text-white mb-4">Danger Zone</h3>
+          <p className="text-gray-400 mb-4 text-sm lg:text-base">Once you delete your account, there is no going back.</p>
+          <button className="text-xs lg:text-base px-6 py-3 bg-red-500/10 text-red-400 rounded-xl font-medium hover:bg-red-500/20 transition-colors">
             Delete Account
           </button>
         </div>
