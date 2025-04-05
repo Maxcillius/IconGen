@@ -1,7 +1,7 @@
 "use client"
 
 import User from "./User"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { useDispatch } from "react-redux"
@@ -9,29 +9,18 @@ import { usePathname } from "next/navigation"
 import { useSelector } from "react-redux"
 import { RootState } from "@/state/store"
 import AuthPopup from "./Authpopup"
-import { setUserInfoState } from "@/state/userData/userData"
-import userInfo from "@/types/userInfo"
-import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth"
-import { auth } from "@/utils/firebaseClient"
-import { redirect } from "next/navigation"
 import { setPopupState } from "@/state/popup/popup"
-import useGetUserData from "@/hooks/updateUser"
+import { useSession } from "next-auth/react"
 
 export default function Navbar() {
     const popupVisibility: boolean = useSelector((state: RootState) => {
         return state.popup.value
     })
 
-    const userInfo: userInfo = useSelector((state: RootState) => {
-        return state.userInfo.value
-    })
-
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const section = usePathname().split("/")[1]
-    // console.log(section)
 
     const setVisibility = useDispatch()
-    const setUserInfo = useDispatch()
 
     const navItems = [
       { name: "Profile", href: "/user/profile", current: section === "user" ? true : false },
@@ -39,48 +28,7 @@ export default function Navbar() {
       { name: "Pricing", href: "/pricing", current: section === "pricing" ? true : false },
     ]
 
-    const checkSession = async () => {
-        if(userInfo.uid) {
-          return
-        }
-        try {
-            await fetch("/api/user/profile", 
-                {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json" }
-                }
-            ).then(response => {
-                if(!response.ok) throw new Error("Error")
-                return response.json()
-            }).then(data => {
-                // console.log(data)
-                if(!data.success) {
-                  return
-                }
-                setUserInfo(setUserInfoState({
-                    email: data.msg.email,
-                    username: data.msg.username,
-                    firstname: data.msg.firstname,
-                    middlename: data.msg.middlename,
-                    lastname: data.msg.lastname,
-                    credits: data.msg.credits,
-                    uid: data.msg.uid,
-                    subscription: data.msg.subscription
-                }))
-            }).catch(error => {
-                console.log(error)
-            })
-        } catch(error) {
-            console.log(error)
-        }
-    }
-
-      const [getUserInfo, getUserIcons] = useGetUserData()
-
-    useEffect(() => {
-        checkSession()
-        getUserIcons()
-    }, [])
+    const {data: session, status} = useSession()
 
     return (
         <>
@@ -130,13 +78,15 @@ export default function Navbar() {
     
                   {/* User Section */}
                   <div className="flex items-center space-x-4">
-                    {userInfo.firstname ? (
-                      <Link href="/user/profile" className="md:block hidden">
-                        <span className="flex items-center px-4 py-2 rounded-xl bg-[#1E293B] hover:bg-[#2D3B4F] transition-all duration-300 group">
-                          <User name={userInfo.firstname} email={userInfo.email}/>
-                        </span>
-                      </Link>
-                    ) : (
+                      { status === "authenticated" &&
+                        <Link href="/user/profile" className="md:block hidden">
+                          <span className="flex items-center px-4 py-2 rounded-xl bg-[#1E293B] hover:bg-[#2D3B4F] transition-all duration-300 group">
+                            <User name={session.user!.name!} email={session.user!.email!}/>
+                          </span>
+                        </Link>
+                      }
+                      {
+                        (status === "loading" || status == "unauthenticated") &&
                       <div className="hidden sm:flex items-center space-x-3">
                         <button
                           onClick={() => setVisibility(setPopupState())}
@@ -145,24 +95,26 @@ export default function Navbar() {
                           Sign up
                         </button>
                       </div>
-                    )}
+                    }
     
                     {/* Mobile Menu Button */}
-                    { !userInfo.firstname ?
-                      <div className="flex lg:hidden">
-                        <button
-                          type="button"
-                          className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-[#1E293B] transition-all duration-300"
-                          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        >
-                          {mobileMenuOpen ? (
-                            <X className="h-6 w-6" aria-hidden="true" />
-                          ) : (
-                            <Menu className="h-6 w-6" aria-hidden="true" />
-                          )}
-                        </button>
-                      </div>
-                      : <div className="flex lg:hidden">
+                      { !session &&
+                        <div className="flex lg:hidden">
+                          <button
+                            type="button"
+                            className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-[#1E293B] transition-all duration-300"
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                          >
+                            {mobileMenuOpen ? (
+                              <X className="h-6 w-6" aria-hidden="true" />
+                            ) : (
+                              <Menu className="h-6 w-6" aria-hidden="true" />
+                            )}
+                          </button>
+                        </div>
+                      }
+                      { session &&
+                        <div className="flex lg:hidden">
                           <button
                             type="button"
                             className="lg:p-2 p-1 rounded-full lg:rounded-xl text-gray-400 hover:text-white lg:hover:bg-[#1E293B] transition-all duration-300"
@@ -170,12 +122,12 @@ export default function Navbar() {
                           >
                             <div className="md:hidden block">
                               <span className="flex items-center lg:px-4 lg:py-2 p-1 rounded-full lg:rounded-xl bg-[#1E293B] hover:bg-[#2D3B4F] transition-all duration-300 group">
-                                <User name={userInfo.firstname} email={userInfo.email}/>
+                                <User name={session.user!.name!} email={session.user!.email!}/>
                               </span>
                             </div>
                           </button>
                         </div>
-                    }
+                      }
                   </div>
                 </div>
               </div>
@@ -185,7 +137,7 @@ export default function Navbar() {
                 <div className="lg:hidden absolute w-full bg-[#111827] border-b border-[#1F2937] shadow-2xl">
                   <div className="px-4 py-3 space-y-1">
                     {navItems.map((item) => {
-                      if(!userInfo.firstname && item.name === "Profile") {
+                      if(!session && item.name === "Profile") {
                         return null
                       } else {
                         return (
@@ -205,7 +157,7 @@ export default function Navbar() {
                         )
                       }
                     })}
-                    {!userInfo.firstname && (
+                    {!session && (
                       <div className="flex flex-col space-y-2 py-4 mt-2 border-t border-[#1F2937]">
                         <button onClick={() => {
                           setVisibility(setPopupState())

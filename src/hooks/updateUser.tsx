@@ -1,39 +1,33 @@
 import { useDispatch } from "react-redux";
 import { setUserInfoState } from "@/state/userData/userData";
-import { setUserIconsState } from "@/state/icons/userIcons";
+import { useState } from "react";
 
 const useGetUserData = () => {
     const dispatch = useDispatch();
 
-    const getUserInfo = async () => {
-        try {
-            const response = await fetch("/api/user/profile", {
-                method: "GET",
-                headers: { "Content-Type": "application/json" }
-            });
+    const [userData, setUserData] = useState({
+      credits: 0,
+      subscription: -1,
+    })
 
-            const data = await response.json();
+    const [icons, setIcons] = useState<[{key: string, url: string}] | []>([])
 
-            if (!data.success) {
-              throw new Error(data.msg)
+    const getUserData = async () => {
+        await fetch("/api/user",
+          {
+            method: "GET",
+            headers:
+            {
+              "Content-Type": "application/json"
             }
+          }
+        ).then((response) => response.json()).then((data) => {
+          if(data.success === 0) {
+            return
+          }
+          setUserData(data)
+        })
 
-            dispatch(setUserInfoState({
-                email: data.msg.email,
-                username: data.msg.username,
-                firstname: data.msg.firstname,
-                middlename: data.msg.middlename,
-                lastname: data.msg.lastname,
-                credits: data.msg.credits,
-                uid: data.msg.uid,
-                subscription: data.msg.subscription
-            }));
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    const getUserIcons = async () => {
         await fetch("/api/icon/fetch",
           {
             method: "GET",
@@ -54,11 +48,17 @@ const useGetUserData = () => {
                 url: obj.url
             }
           })
-          dispatch(setUserIconsState(array))
+          setIcons(array)
         })
       }
 
-    return [getUserInfo, getUserIcons]
+      dispatch(setUserInfoState({
+        credits: userData.credits,
+        subscription: userData.subscription,
+        icons: icons
+      }))
+
+    return getUserData
 };
 
 export default useGetUserData;

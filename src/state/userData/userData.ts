@@ -2,27 +2,17 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface userinfoState {
     value: {
-        email: string,
-        username: string,
-        firstname: string,
-        middlename: string,
-        lastname: string,
         credits: number,
-        uid: string,
-        subscription: number
+        subscription: number,
+        icons: [{key: string, url: string}] | []
     }
 }
 
 const initialState: userinfoState = {
     value: {
-        email: "",
-        username: "",
-        firstname: "",
-        middlename: "",
-        lastname: "",
         credits: 0,
-        uid: "",
-        subscription: -1
+        subscription: -1,
+        icons: []
     }
 }
 

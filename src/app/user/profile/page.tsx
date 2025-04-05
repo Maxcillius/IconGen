@@ -1,71 +1,84 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { CreditCard, Settings, User, Image, ChevronRight, LogOut } from "lucide-react"
-import dp from '@/images/dp.jpg'
 import { useSelector } from "react-redux"
 import { RootState } from "@/state/store"
-import { useRouter } from "next/navigation"
-import { setUserInfoState } from "@/state/userData/userData"
+import { redirect } from "next/navigation"
+import { signOut, useSession } from "next-auth/react"
 import { useDispatch } from "react-redux"
-import useGetUserInfo from "@/hooks/updateUser"
-// import { auth } from "@/utils/firebaseClient"
-// import { signOut } from "firebase/auth"
+import { setUserInfoState } from "@/state/userData/userData"
 
 export default function Profile() {
 
-  const userInfo = useSelector((state: RootState) => {
-    return state.userInfo.value
-  })
-
   const icons = useSelector((state: RootState) => {
-    return state.userIcons.value
+    return state.userInfo.value.icons
   })
 
-  const router = useRouter()
+  const credits = useSelector((state: RootState) => {
+    return state.userInfo.value.credits
+  })
+
   const [activeSection, setActiveSection] = useState("profile")
-  const [isEdit, setEdit] = useState(false)
-  const [newUsername, setUsername] = useState(userInfo.username)
-  const [newName, setName] = useState(userInfo.firstname)
-  const [changing, setChanging] = useState(false)
-  const [alert, setAlert] = useState("")
 
-  const updateUserInfo = useDispatch()
-  const [getUserInfo, getUserIcons] = useGetUserInfo()
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/")
+    },
+  })
 
-  const updateData = async () => {
-    try {
-      setChanging(true)
-      const response = await fetch("/api/user/action/update",
-        {
-          method: "POST",
-          headers:
-          {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            username: newUsername,
-            firstname: newName,
-            email: userInfo.email
-          })
+  const dispatch = useDispatch()
+
+  const fetchData = () => {
+    let credits = 0;
+    let subscription = -1;
+    const getUserData = async () => {
+        await fetch("/api/user",
+            {
+            method: "GET",
+            headers:
+            {
+                "Content-Type": "application/json"
+            }
+            }
+        ).then((response) => response.json()).then((data) => {
+            if(data.success === 0) {
+                return
+            }
+            credits = data.credits
+            subscription = data.subscription
+        })
+
+        await fetch("/api/icon/fetch",
+            {
+            method: "GET",
+            headers:
+            {
+                "Content-Type": "application/json"
+            }
+            }
+        ).then((response) => {
+            return response.json()
+        }).then((data) => {
+            if(!data.contents) {
+              return
+            }
+            const array: [{key: string, url: string}] = data.contents.map((obj: { key: string, url: string }) => {
+            return {
+                key: obj.key,
+                url: obj.url
+            }
+            })
+            dispatch(setUserInfoState({
+              credits: credits,
+              subscription: subscription,
+              icons: array
+            }))
+        })
         }
-      )
-      const data = await response.json()
-      if (data.success === 0) {
-        setChanging(false)
-        setAlert(data.msg)
-        setTimeout(() => {
-          setAlert("")
-        }, 2500)
-        return
-      }
-      setChanging(false)
-      setEdit(false)
-      getUserInfo()
-      router.refresh()
-    } catch (Error) {
-      console.log(Error)
-    }
+
+    getUserData()
   }
 
   // const Download = (index: number) => {
@@ -98,38 +111,43 @@ export default function Profile() {
   //   downloadImage()
   // }
 
+  useEffect(() => {
+      fetchData()
+  }, [])
 
     const renderProfile = () => (
       <>
         <div className="flex items-center space-x-6">
           <div className="relative">
-            <img
-              src={dp.src}
+            { session &&
+              <img
+              src={session?.user!.image!}
               alt="Profile"
               className="w-24 h-24 rounded-2xl object-cover border-2 border-[#1F2937]"
             />
+            }
             <div className="absolute -bottom-2 right-0 h-6 px-2 bg-emerald-500 rounded-full flex items-center">
               <span className="text-xs font-medium text-emerald-900">Verified</span>
             </div>
           </div>
           <div>
             <h1 className="text-xl lg:text-3xl font-bold text-white">
-              {userInfo?.firstname} {userInfo?.middlename} {userInfo?.lastname}
+              {session?.user?.name}
             </h1>
-            <p className="text-gray-400 mt-1 text-sm lg:text-base">@{userInfo?.username}</p>
+            {/* <p className="text-gray-400 mt-1 text-sm lg:text-base">@{session?.user}</p> */}
           </div>
         </div>
         <div className="flex flex-row justify-end h-14">
-          {alert && (
+          {/* {alert && (
             <div className="flex flex-row justify-center text-red-600 mb-4 text-xs lg:text-base">
               {alert}
             </div>
           )
-          }
+          } */}
         </div>
 
         <div className="grid gap-6">
-          {["username", "email", "name"].map((field: string) => (
+          {["email", "name"].map((field: string) => (
             <div
               key={field}
               className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6 transition-shadow hover:shadow-lg text-sm lg:text-base"
@@ -138,80 +156,19 @@ export default function Profile() {
                 {field}
               </label>
               {
-                !isEdit &&
                 <div className="text-xs lg:text-lg font-medium text-white">
                   {field === "name"
-                    ? `${userInfo?.firstname}`
-                    : field === "email"
-                      ? userInfo?.email
-                      : userInfo?.username}
+                    ? `${session?.user?.name}`
+                    : session?.user?.email}
                 </div>
-              }
-              {
-                isEdit && field !== "email" && (
-                  <input
-                    onChange={(e) => {
-                      if (field === "username") setUsername(e.target.value)
-                      else setName(e.target.value)
-                    }}
-                    defaultValue={field === "name" ? userInfo.firstname : userInfo.username}
-                    type="text"
-                    className="mt-2 w-full bg-[#1F2937] text-white px-4 py-2 lg:py-3 rounded-xl focus:outline-none text-xs lg:text-base"
-                    placeholder={`Enter new ${field}`}
-                  />
-                )
               }
             </div>
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-4 pt-6 justify-between">
-          {
-            isEdit ? (
-              <div className="flex gap-4">
-                <button onClick={() => (
-                  updateData()
-                )} className="group relative px-4 py-2 lg:px-6 lg:py-3 bg-[#1F2937] rounded-xl overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-400 transition-transform duration-300 group-hover:translate-x-0 -translate-x-full"></div>
-                  <span className="relative flex items-center font-medium">
-                    {
-                      changing ? (
-                        <div className="text-xs lg:text-base">
-                          <span className="w-4 h-4 mr-2 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
-                          Saving...
-                        </div>
-                      ) : (
-                        <div className="text-xs lg:text-base">
-                          {/* <Settings className="w-4 h-4 mr-2" /> */}
-                          Save
-                        </div>
-                      )
-                    }
-                  </span>
-                </button>
-                <button onClick={() => {
-                  setUsername("")
-                  setName("")
-                  setEdit(false)
-                }} className="group relative px-4 py-2 lg:px-6 lg:py-3 bg-[#1F2937] rounded-xl overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-400 transition-transform duration-300 group-hover:translate-x-0 -translate-x-full"></div>
-                  <span className="relative flex items-center font-medium text-xs lg:text-base">
-                    cancel
-                  </span>
-                </button>
-              </div>
-            ) : (
-              <button onClick={() => setEdit(true)} className="group relative px-6 py-3 bg-[#1F2937] rounded-xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 transition-transform duration-300 group-hover:translate-x-0 -translate-x-full"></div>
-                <span className="relative flex items-center font-medium text-xs lg:text-base">
-                  <Settings className="lg:w-4 lg:h-4 w-3 h-3 mr-2" />
-                  Edit Profile
-                </span>
-              </button>
-            )
-          }
+        <div className="flex flex-wrap gap-4 pt-6 justify-end">
           <button
-            onClick={() => handleSignOut()} className="group relative px-4 py-2 lg:px-6 lg:py-3 bg-[#1F2937] rounded-xl overflow-hidden">
+            onClick={() => signOut({ callbackUrl: '/', redirect:true })} className="group relative px-4 py-2 lg:px-6 lg:py-3 bg-[#1F2937] rounded-xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-400 transition-transform duration-300 group-hover:translate-x-0 -translate-x-full"></div>
             <span className="relative flex items-center font-medium text-xs lg:text-base">
               <LogOut className="lg:w-4 lg:h-4 w-3 h-3 mr-2 text-xs lg:text-base" />
@@ -230,7 +187,7 @@ export default function Profile() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-blue-100 text-lg mb-2">Available Credits</p>
-                <p className="text-4xl font-bold text-white">{userInfo?.credits}</p>
+                <p className="text-4xl font-bold text-white">{credits}</p>
               </div>
               <CreditCard className="w-12 h-12 text-blue-100" />
             </div>
@@ -312,37 +269,6 @@ export default function Profile() {
       // { id: "security", icon: Shield, label: "Security", component: renderSecurity },
       { id: "settings", icon: Settings, label: "Settings", component: renderSettings },
     ];
-
-    const handleSignOut = async () => {
-      await fetch("/api/auth/signout",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      ).then((response) => {
-        if (!response.ok) {
-          throw new Error()
-        }
-        return response.json()
-      }).then(() => {
-        updateUserInfo(setUserInfoState({
-          email: "",
-          username: "",
-          firstname: "",
-          middlename: "",
-          lastname: "",
-          credits: 0,
-          uid: "",
-          subscription: -1
-        }))
-        router.push("/")
-
-      }).catch((error) => {
-        console.log(error)
-      })
-    }
 
     return (
       <div className="min-h-screen bg-[#0A0F16] text-gray-200">

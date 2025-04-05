@@ -3,23 +3,14 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server"
 import { ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
-import s3 from "@/utils/s3"
-import { cookies } from "next/headers"
-import admin from "@/utils/firebaseAdmin"
+import s3 from "@/lib/s3"
+import authOptions from "@/lib/auth";
+import { getServerSession } from "next-auth";
 
 export async function GET() {
     try {
-        const cookieStore = await cookies();
-        const sessionTokenCookie = cookieStore.get("sessionKey")
-        const sessionToken = sessionTokenCookie?.value
-        if(!sessionToken) {
-            return NextResponse.json({
-                success: 0,
-                msg: "No session token found"
-            })
-        }
-        const decodedToken = await admin.auth().verifySessionCookie(sessionToken)
-        if(!decodedToken) {
+        const session = await getServerSession(authOptions)
+        if(!session?.user) {
             return NextResponse.json({
                 success: 0,
                 msg: "Unauthorized"
@@ -30,7 +21,7 @@ export async function GET() {
         }
         const command = new ListObjectsV2Command({
             Bucket: process.env.BUCKET_NAME,
-            Prefix: `userIcons/${decodedToken.uid}/`
+            Prefix: `userIcons/${session.user.id}/`
         })
         const response = await s3.send(command)
         // console.log(response)
@@ -62,6 +53,7 @@ export async function GET() {
         },
         {
             status: 500
-        })
+        }
+    )
     }
 }

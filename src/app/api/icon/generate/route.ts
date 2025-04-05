@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
-import { cookies } from "next/headers"
-import admin from "@/utils/firebaseAdmin";
 import OpenAI from "openai"
 import { ImageGenerateParams } from "openai/resources/images.mjs";
 import db from "@/db/db";
 import axios from "axios";
-import s3 from "@/utils/s3"
+import s3 from "@/lib/s3"
 import { PutObjectCommand } from "@aws-sdk/client-s3"
+import { getServerSession } from "next-auth";
+import authOptions from "@/lib/auth";
 
 const openai = new OpenAI();
 
@@ -34,31 +34,10 @@ const formatPrompt = (mode: string, prompt: string): string => {
 export async function POST(req: NextRequest) {
     try {
         const { prompt, model, quality, size, style, mode } = await req.json()
-        const cookieStore = await cookies();
-        const sessionTokenCookie = cookieStore.get("sessionKey")
-        const sessionToken = sessionTokenCookie?.value
-        if(!sessionToken) {
-            return NextResponse.json({
-                success: 0,
-                msg: "No session token found"
-            },
-            {
-                status: 401
-            })
-        }
-        const decodedToken = await admin.auth().verifySessionCookie(sessionToken)
-        if(!decodedToken) {
-            return NextResponse.json({
-                success: 0,
-                msg: "Unauthorized"
-            },
-            {
-                status: 401
-            })
-        }
-        const userAccount = await db.account.findUnique({
+        const session = await getServerSession(authOptions)
+        const userAccount = await db.account.findFirst({
             where: {
-                uid: decodedToken.uid
+                userId: session?.user.id
             }
         })
         if(userAccount
@@ -91,9 +70,14 @@ export async function POST(req: NextRequest) {
             const image = await openai.images.generate(openaiRequest)
             if(image) {
                 console.log(image)
+                const account = await db.account.findFirst({
+                    where: {
+                        userId: session?.user.id
+                    }
+                })
                 await db.account.update({
                     where: {
-                        uid: decodedToken.uid
+                        id: account?.id
                     },
                     data: {
                         credits: { decrement: model === "dall-e-2" ? 1 : 2 }
@@ -108,7 +92,7 @@ export async function POST(req: NextRequest) {
                 const uniqueKey = `${Date.now()}`
                 const command = new PutObjectCommand({
                     Bucket: process.env.BUCKET_NAME as string,
-                    Key: `userIcons/${decodedToken.uid}/${uniqueKey}`,
+                    Key: `userIcons/${session?.user.id}/${uniqueKey}`,
                     Body: response.data,
                     ContentType: "image/png"
                 })
@@ -144,6 +128,7 @@ export async function POST(req: NextRequest) {
         },
         {
             status: 500
-        })
+        }
+    )
     }
 }

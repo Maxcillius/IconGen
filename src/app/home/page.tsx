@@ -2,17 +2,17 @@
 
 import { dall2, dall3 } from "../../interfaces/dimensions"
 import { useState } from "react"
-import { useSelector } from "react-redux";
 import { Crown, Download, X, Trash2, Info, Sparkles } from "lucide-react";
-import { RootState } from "@/state/store";
 import { useDispatch } from "react-redux";
 import { setPopupState } from "@/state/popup/popup";
 import { StaticImageData } from "next/image"
 import Image from "next/image";
-// import Link from "next/link";
+import { useSelector } from "react-redux";
 import Sticker from "@/images/sticker.png"
 import Pixel from "@/images/pixel.png"
 import Vector from "@/images/vector.png"
+import { useSession } from "next-auth/react";
+import { RootState } from "@/state/store";
 
 export default function Home() {
     const [quality, setQuality] = useState("standard")
@@ -23,10 +23,6 @@ export default function Home() {
     const [subspopup, setSubspopup] = useState(false)
     const [generating, setGenerating] = useState(false)
     const [mode, setMode] = useState("Pixel")
-
-    const subscription: number = useSelector((state: RootState) => {
-        return state.userInfo.value.subscription
-    })
 
     const modeImages: Record<string, StaticImageData> = {
         "Sticker": Sticker,
@@ -40,14 +36,18 @@ export default function Home() {
         { id: "Vector" },
     ];
 
+    const subscription = useSelector((state: RootState) => {
+        return state.userInfo.value.subscription
+    })
+    const { data: session, status } = useSession()
+    
     const setVisibility = useDispatch()
 
     const generateIcon = async () => {
         if(window.screen.width < 500) {
             window.scrollTo({ top: 550, behavior: "smooth" })
         }
-        if (subscription === -1) {
-            console.log(subscription)
+        if (!session) {
             setVisibility(setPopupState())
             return
         }
@@ -55,7 +55,6 @@ export default function Home() {
             setError("Please enter a prompt to generate your icon");
             return;
         }
-        // console.log(styleContent)
         setGenerating(true)
         try {
             setError("")
@@ -158,17 +157,6 @@ export default function Home() {
                                                     Preview
                                                 </h2>
                                                 <div className="flex gap-2">
-                                                    {/* <button
-                                                        onClick={() =>  imageLink && handleSave(imageLink)}
-                                                        className={`p-2 rounded-lg transition-all duration-300 ${saved
-                                                            ? "bg-green-500/20 text-green-400"
-                                                            : "bg-[#1E293B] hover:bg-[#2D3B4F] text-gray-400 hover:text-white"
-                                                            }`}
-                                                    >
-                                                        {   saving ? <div className="w-4 h-4 rounded-full border-2 border-blue-700 border-l-transparent animate-spin"></div>
-                                                            : <Save size={18} />
-                                                        }
-                                                    </button> */}
                                                     <button
                                                         onClick={() => imageLink && window.open(imageLink, "_blank")}
                                                         className="p-2 bg-[#1E293B] hover:bg-[#2D3B4F] rounded-lg transition-all duration-300 text-gray-400 hover:text-white"
@@ -257,7 +245,7 @@ export default function Home() {
                                                                         className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${dimension === size
                                                                             ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
                                                                             : "text-gray-400 hover:text-white"
-                                                                            } ${subscription < index && subscription !== -1 ? "opacity-50" : ""}`}
+                                                                            } ${subscription < index && !session ? "opacity-50" : ""}`}
                                                                     >
                                                                         {size}
                                                                     </button>
