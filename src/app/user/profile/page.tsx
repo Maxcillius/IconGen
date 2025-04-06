@@ -2,24 +2,14 @@
 
 import { useEffect, useState } from "react"
 import { CreditCard, Settings, User, Image, ChevronRight, LogOut } from "lucide-react"
-import { useSelector } from "react-redux"
-import { RootState } from "@/state/store"
 import { redirect } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
-import { useDispatch } from "react-redux"
-import { setUserInfoState } from "@/state/userData/userData"
 
 export default function Profile() {
 
-  const icons = useSelector((state: RootState) => {
-    return state.userInfo.value.icons
-  })
-
-  const credits = useSelector((state: RootState) => {
-    return state.userInfo.value.credits
-  })
-
   const [activeSection, setActiveSection] = useState("profile")
+  const [icons, setIcons] = useState<[{key: string, url: string}] | []>([])
+  const [credits, setCredits] = useState("NA")
 
   const { data: session, status } = useSession({
     required: true,
@@ -28,92 +18,48 @@ export default function Profile() {
     },
   })
 
-  const dispatch = useDispatch()
-
-  const fetchData = () => {
-    let credits = 0;
-    let subscription = -1;
-    const getUserData = async () => {
-        await fetch("/api/user",
-            {
-            method: "GET",
-            headers:
-            {
-                "Content-Type": "application/json"
-            }
-            }
-        ).then((response) => response.json()).then((data) => {
-            if(data.success === 0) {
-                return
-            }
-            credits = data.credits
-            subscription = data.subscription
-        })
-
-        await fetch("/api/icon/fetch",
-            {
-            method: "GET",
-            headers:
-            {
-                "Content-Type": "application/json"
-            }
-            }
-        ).then((response) => {
-            return response.json()
-        }).then((data) => {
-            if(!data.contents) {
-              return
-            }
-            const array: [{key: string, url: string}] = data.contents.map((obj: { key: string, url: string }) => {
-            return {
-                key: obj.key,
-                url: obj.url
-            }
-            })
-            dispatch(setUserInfoState({
-              credits: credits,
-              subscription: subscription,
-              icons: array
-            }))
-        })
+  const getUserData = async () => {
+      await fetch("/api/user/fetchcredits",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
         }
+      ).then((response) => response.json()).then((data) => {
+        if(data.success === 0) {
+          return
+        }
+        setCredits(data.credits)
+      })
 
-    getUserData()
-  }
+      await fetch("/api/user/fetchicons",
+        {
+          method: "GET",
+          headers:
+          {
+            "Content-Type": "application/json"
+          }
+        }
+      ).then((response) => {
+        return response.json()
+      }).then((data) => {
+        if(!data.success) {
+          return
+        }
+        const array: [{key: string, url: string}] = data.contents.map((obj: { key: string, url: string }) => {
+          return {
+              key: obj.key,
+              url: obj.url
+          }
+        })
+        setIcons(array)
+      })
+    }
 
-  // const Download = (index: number) => {
-  //   const downloadImage = async () => {
-  //     console.log("Downloading")
-  //     const image = icons[index]
-
-  //     try {
-  //       const response = await fetch(image.url, { mode: 'cors' })
-
-  //       if (!response.ok) throw new Error('Fetch failed')
-
-  //       const blob = await response.blob();
-  //       const blobUrl = window.URL.createObjectURL(blob)
-
-  //       const a = document.createElement('a')
-  //       a.href = blobUrl
-  //       a.download = image.key
-  //       document.body.appendChild(a)
-  //       a.click();
-  //       a.remove();
-
-  //       window.URL.revokeObjectURL(blobUrl)
-  //       console.log("Downloaded")
-  //     } catch (err) {
-  //       console.error('Download failed:', err)
-  //     }
-  //   }
-  //   window.open(icons[index].url, "_blank")
-  //   downloadImage()
-  // }
-
-  useEffect(() => {
-      fetchData()
-  }, [])
+    useEffect(() => {
+      getUserData()
+    }, [])
 
     const renderProfile = () => (
       <>

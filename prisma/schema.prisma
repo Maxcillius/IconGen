@@ -24,7 +24,8 @@ model Account {
   session_state     String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-
+  bills             Billing[]
+  
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
@@ -56,4 +57,13 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Billing {
+  id         String      @id
+  userId     Account     @relation(fields: [id], references: [id], onDelete: Cascade)
+  paymentId  String
+  credits    Int
+  Date       DateTime
+  status     String    
 }

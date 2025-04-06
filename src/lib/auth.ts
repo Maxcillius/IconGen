@@ -8,7 +8,8 @@ interface session extends Session {
     name: string,
     email: string,
     image: string,
-    id: string
+    id: string,
+    sub: number
   }
 }
 
@@ -33,6 +34,14 @@ const authOptions = {
       async session({ session, user }) {
         const newSession: session = session as session;
         if(newSession.user) {
+          const userData = await db.account.findFirst({
+            where: {
+              userId: user.id,
+            }
+          })
+          if(userData) {
+            newSession.user.sub = userData.subscription as number
+          }
           newSession.user.id = user.id
         }
         return newSession;

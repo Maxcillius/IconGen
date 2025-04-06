@@ -43,7 +43,7 @@ return (
                         </div>
                         
                         {/* Title */}
-                        <h1 className="text-center text-black font-bold text-xl sm:text-2xl pb-4 sm:pb-6">Sign In to X</h1>
+                        <h1 className="text-center text-black font-bold text-xl sm:text-2xl pb-4 sm:pb-6">Sign In to IconGen</h1>
 
                         {/* Alert */}
                         {alert && (

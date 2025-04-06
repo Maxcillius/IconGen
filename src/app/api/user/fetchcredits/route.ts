@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server"
 import authOptions from "@/lib/auth";
 import { getServerSession } from "next-auth";
@@ -15,29 +17,29 @@ export async function GET() {
                 status: 401
             })
         }
-        const userData = await db.account.findFirst({
+        const user = await db.account.findFirst({
             where: {
                 userId: session.user.id
             }
         })
-        if(!userData) {
+        if(!user) {
             return NextResponse.json({
                 success: 0,
-                msg: "User not found"
+                msg: "No account found"
             },
             {
                 status: 404
             })
         }
         return NextResponse.json({
-            credits: userData?.credits,
-            subscription: userData?.subscription
+            success: 1,
+            credits: user?.credits,
         })
     } catch(err) {
         console.log(err)
         return NextResponse.json({
             success: 0,
-            msg: "Error while fetching data"
+            msg: "Error while fetching icons"
         },
         {
             status: 500

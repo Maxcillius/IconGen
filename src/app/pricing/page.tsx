@@ -1,5 +1,6 @@
 import React from 'react';
 import { Check } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Pricing() {
   return (
@@ -12,7 +13,7 @@ export default function Pricing() {
             <p className="mt-4 text-base sm:text-lg leading-relaxed text-slate-400">Choose a flexible monthly or yearly subscription. Easy cancellation whenever you need - simple and straightforward.</p>
           </div>
 
-          {/* Desktop View */}
+          {/* Desktop View */}  
           <div className="hidden mt-16 lg:block overflow-x-auto">
             <div className="min-w-max">
               <table className="w-full">
@@ -41,11 +42,12 @@ export default function Pricing() {
                 <tbody>
                   {[
                     { feature: 'Tokens', values: ['01 /day', '50', '120', 'Unlimited'] },
-                    { feature: 'Save icons', values: ['-', '15', '40', 'Unlimited'] },
                     { feature: 'Dimension', values: ['Small', 'Small\nMedium', 'All', 'All'] },
                     { feature: 'Model', values: ['v2', 'v2\nv3', 'v2\nv3', 'v2\nv3'] },
+                    { feature: 'Multiple generation', values: ['-', '-', '3', '10'] },
                     { feature: 'Styles', values: ['-', true, true, true] },
-                    { feature: 'Server speed', values: ['-', '-', true, true] }
+                    { feature: 'Server speed', values: ['-', '-', true, true] },
+                    { feature: 'Create variations', values: ['-', '-', true, true] },
                   ].map((row, index) => (
                     <tr key={index}>
                       <td className="py-4 pr-4 font-medium border-b border-gray-400 text-white">{row.feature}</td>
@@ -69,15 +71,15 @@ export default function Pricing() {
                     <td className="py-6 pr-4"></td>
                     {[false, false, true, false].map((isHighlighted, index) => (
                       <td key={index} className={`px-4 py-6 text-center ${isHighlighted ? 'bg-orange-600 rounded-b-xl' : ''}`}>
-                        <a
-                          href="#"
+                        <Link
+                          href="/payment/checkout"
                           className={`inline-flex items-center font-semibold ${isHighlighted ? 'text-white' : 'text-blue-600 hover:text-blue-700'}`}
                         >
                           Get Started
                           <svg className="w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                           </svg>
-                        </a>
+                        </Link>
                       </td>
                     ))}
                   </tr>
@@ -126,8 +128,8 @@ export default function Pricing() {
                   ))}
                 </ul>
 
-                <a
-                  href="#"
+                <Link
+                  href="/payment/checkout"
                   className={`mt-8 block w-full px-4 py-3 text-center font-semibold rounded-lg ${
                     plan.highlight
                       ? 'bg-blue-600 text-white hover:bg-blue-700'
@@ -135,7 +137,7 @@ export default function Pricing() {
                   } transition duration-200`}
                 >
                   Get Started
-                </a>
+                </Link>
               </div>
             ))}
           </div>

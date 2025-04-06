@@ -1,28 +1,31 @@
 "use client"
 
 import { dall2, dall3 } from "../../interfaces/dimensions"
-import { useState } from "react"
-import { Crown, Download, X, Trash2, Info, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react"
+import { Download, Trash2, Info, Sparkles } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setPopupState } from "@/state/popup/popup";
-import { StaticImageData } from "next/image"
 import Image from "next/image";
-import { useSelector } from "react-redux";
+import { useSession } from "next-auth/react";
 import Sticker from "@/images/sticker.png"
 import Pixel from "@/images/pixel.png"
 import Vector from "@/images/vector.png"
-import { useSession } from "next-auth/react";
-import { RootState } from "@/state/store";
+import { StaticImageData } from "next/image"
+import Styles from "@/components/Styles";
+import SubscriptionPopup from "@/components/SubscriptionPopup";
 
 export default function Home() {
     const [quality, setQuality] = useState("standard")
     const [dimension, setDimension] = useState("small")
+    const [count, setCount] = useState(1)
     const [prompt, setPrompt] = useState("")
     const [error, setError] = useState("")
-    const [imageLink, setImageLink] = useState("")
+    const [imageLink, setImageLink] = useState<{url: string}[]>([])
     const [subspopup, setSubspopup] = useState(false)
     const [generating, setGenerating] = useState(false)
+    const [model, setModel] = useState("dall-e-2")
     const [mode, setMode] = useState("Pixel")
+    const [subscription, setSubscription] = useState(-1)
 
     const modeImages: Record<string, StaticImageData> = {
         "Sticker": Sticker,
@@ -36,12 +39,16 @@ export default function Home() {
         { id: "Vector" },
     ];
 
-    const subscription = useSelector((state: RootState) => {
-        return state.userInfo.value.subscription
-    })
     const { data: session, status } = useSession()
-    
     const setVisibility = useDispatch()
+
+    useEffect(() => {
+        if (session?.user && status === "authenticated") {
+            setSubscription((session.user as { sub?: number }).sub ?? -1)
+        } else {
+            setSubscription(-1)
+        }
+    }, [])
 
     const generateIcon = async () => {
         if(window.screen.width < 500) {
@@ -64,10 +71,11 @@ export default function Home() {
                     body: JSON.stringify({
                         prompt: prompt,
                         mode: mode,
-                        model: quality === "hd" ? "dall-e-3" : "dall-e-2",
+                        model: model,
                         quality: quality,
                         size: quality === "hd" ? dall3[dimension] : dall2[dimension],
                         style: "natural",
+                        count: count
                     })
                 }
             ).then(response => {
@@ -78,7 +86,7 @@ export default function Home() {
                     setGenerating(false)
                     return
                 }
-                setImageLink(data.url)
+                setImageLink(data.data)
             })
         } catch (error) {
             console.log(error)
@@ -96,34 +104,24 @@ export default function Home() {
                 <div className="container mx-auto px-4 py-12">
                     <div className="flex flex-col lg:flex-row gap-8">
                         {/* Left Panel - Style Library */}
-                        <div className="w-full lg:w-72">
-                            <div className="rounded-2xl bg-[#111827] border border-[#1F2937] overflow-hidden shadow-xl shadow-black/20">
-                                <div className="p-4 bg-gradient-to-r from-[#1E293B] to-[#1a1f2b] border-b border-[#1F2937]">
-                                    <h3 className="text-white font-semibold flex items-center gap-2">
-                                        <Sparkles size={18} className="text-blue-400" />
-                                        Style Library
-                                    </h3>
-                                </div>
-                                <div className="p-4 h-[calc(90vh-12rem)] overflow-y-scroll flex flex-col gap-5">
-                                    <div className="flex flex-row flex-wrap justify-evenly gap-5">
-                                        {
-                                            modes.map((style) => {
-                                                return (
-                                                    <div key={style.id} onClick={() => { setMode(style.id) }} className="relative hover:cursor-pointer">
-                                                        <div className={`absolute w-full h-full rounded-xl ${mode === style.id ? "border-4 border-blue-600" : ""}`}></div>
-                                                        <Image src={modeImages[style.id]} alt="icon"
-                                                            className={`w-28 h-28 rounded-xl`}
-                                                        >
+                        <Styles>
+                            {
+                                modes.map((style) => {
+                                    return (
+                                        <div key={style.id} onClick={() => {
+                                            if(subscription >= 1) setMode(style.id)
+                                        }} className={`${ subscription < 1 ? "bg-black opacity-50": "" } relative hover:cursor-pointer`}>
+                                            <div className={`absolute w-full h-full rounded-xl ${mode === style.id ? "border-4 border-blue-600" : ""}`}></div>
+                                            <Image src={modeImages[style.id]} alt="icon"
+                                                className={`w-28 h-28 rounded-xl`}
+                                            >
 
-                                                        </Image>
-                                                    </div>
-                                                )
-                                            })
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                            </Image>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </Styles>
 
                         {/* Right Panel - Main Content */}
                         <div className="flex-1 space-y-6">
@@ -144,135 +142,6 @@ export default function Home() {
                                     </p>
                                 </div>
                             )}
-
-                            {/* Preview and Settings Grid */}
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                {/* Preview Panel */}
-                                <div className="lg:col-span-2">
-                                    <div className="bg-[#111827] rounded-2xl border border-[#1F2937] shadow-xl shadow-black/20 overflow-hidden">
-                                        <div className="p-6">
-                                            <div className="flex items-center justify-between mb-6">
-                                                <h2 className="text-white font-medium flex items-center gap-2">
-                                                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                                                    Preview
-                                                </h2>
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={() => imageLink && window.open(imageLink, "_blank")}
-                                                        className="p-2 bg-[#1E293B] hover:bg-[#2D3B4F] rounded-lg transition-all duration-300 text-gray-400 hover:text-white"
-                                                    >
-                                                        <Download size={18} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div className="relative bg-[#0A0F16] rounded-xl border border-[#1F2937] p-4 lg:p-8 flex items-center justify-center">
-                                                {
-                                                    generating && (
-                                                        <>
-                                                            <div className="absolute w-64 h-64 rounded-full border-8 border-blue-700 border-l-transparent animate-spin"></div>
-                                                        </>
-                                                    )}
-                                                <div className="w-64 h-64 rounded-full bg-gradient-to-br from-[#1E293B] to-[#111827] p-1 shadow-2xl shadow-black/40">
-                                                    <div className="w-full h-full rounded-full bg-[#0A0F16] flex items-center justify-center">
-                                                        {imageLink &&
-                                                            <Image
-                                                                src={imageLink}
-                                                                alt="Generated icon"
-                                                                className="w-full h-full rounded-full object-cover"
-                                                                width={500}
-                                                                height={500}
-                                                            />
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Settings Panel */}
-                                <div className="bg-[#111827] rounded-2xl border border-[#1F2937] shadow-xl shadow-black/20 overflow-hidden">
-                                    <div className="p-6">
-                                        <h2 className="text-white font-medium flex items-center gap-2 mb-6">
-                                            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                                            Settings
-                                        </h2>
-                                        <div className="space-y-6">
-                                            {/* Quality Setting */}
-                                            <div className="relative">
-                                                <label className="text-gray-400 text-sm font-medium mb-2 block">Quality</label>
-                                                <div className="grid grid-cols-2 gap-2 bg-[#0A0F16] p-1 rounded-lg">
-                                                    <button
-                                                        onClick={() => setQuality("standard")}
-                                                        className={`py-2 px-4 text-xs lg:text-base rounded-md transition-all duration-300 ${quality === "standard"
-                                                            ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                            : "text-gray-400 hover:text-white"
-                                                            }`}
-                                                    >
-                                                        Standard
-                                                    </button>
-                                                    <div className="relative">
-                                                        <button
-                                                            onClick={() => setQuality("hd")}
-                                                            className={`w-full py-2 px-4 text-xs lg:text-base rounded-md transition-all duration-300 ${quality === "hd"
-                                                                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                : "text-gray-400 hover:text-white"
-                                                                } ${subscription < 1 ? "opacity-50" : ""}`}
-                                                        >
-                                                            HD
-                                                        </button>
-                                                        {subscription < 1 && (
-                                                            <div onClick={() => { setSubspopup(true) }} className="bg-balck opacity-50 absolute inset-0 flex items-center justify-end pr-4 hover:cursor-pointer">
-                                                                
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Dimension Setting */}
-                                            <div className="relative">
-                                                <label className="text-gray-400 text-sm font-medium mb-2 block">Dimension</label>
-                                                <div className="grid grid-cols-3 gap-2 bg-[#0A0F16] p-1 rounded-lg">
-                                                    {["small", "medium", "large"].map((size, index) => {
-                                                        if(quality === "hd" && size === "small") {
-                                                            return null
-                                                        } else {
-                                                            return (
-                                                                <div key={size} className="relative w-full">
-                                                                    <button
-                                                                        onClick={() => setDimension(size)}
-                                                                        className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${dimension === size
-                                                                            ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                            : "text-gray-400 hover:text-white"
-                                                                            } ${subscription < index && !session ? "opacity-50" : ""}`}
-                                                                    >
-                                                                        {size}
-                                                                    </button>
-                                                                    {subscription < index && size !== "small" && (
-                                                                        <div onClick={() => { setSubspopup(true) }} className="bg-black opacity-50 hover:cursor-pointer absolute inset-0 flex items-center justify-end pr-2">
-                                                                            
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            )
-                                                        }
-                                                    })}
-                                                </div>
-                                            </div>
-
-                                            {/* Generate Button */}
-                                            <button
-                                                onClick={generateIcon}
-                                                className="w-full py-3 text-sm lg:text-base px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
-                                            >
-                                                <Sparkles size={18} />
-                                                Generate Icon
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
                             {/* Prompt Input */}
                             <div className="bg-[#111827] rounded-2xl border border-[#1F2937] shadow-xl shadow-black/20 overflow-hidden">
@@ -307,6 +176,224 @@ export default function Home() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Preview and Settings Grid */}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                
+                                {/* Preview Panel */}
+                                <div className="lg:col-span-2">
+                                    <div className="bg-[#111827] rounded-2xl border border-[#1F2937] shadow-xl shadow-black/20 overflow-hidden">
+                                        <div className="p-6">
+                                            <div className="flex items-center justify-between mb-6">
+                                                <h2 className="text-white font-medium flex items-center gap-2">
+                                                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                                    Preview
+                                                </h2>
+                                                {
+                                                    generating &&
+                                                    <div className="w-4 h-4 rounded-full border-blue-500 border-2 border-t-transparent animate-spin"></div>
+                                                }
+                                            </div>
+                                            <div className="relative bg-[#0A0F16] rounded-xl border border-[#1F2937] p-4 lg:p-8 flex items-center justify-center">
+                                                {
+                                                    imageLink && imageLink.length > 0 ? (
+                                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
+                                                            {imageLink.map((img: {url: string}, index) => (
+                                                                <div key={index} className="relative w-full h-32 lg:h-48">
+                                                                    <Image
+                                                                        src={img.url}
+                                                                        alt={`Generated Icon ${index + 1}`}
+                                                                        className="w-full h-full object-cover rounded-xl"
+                                                                        width={500}
+                                                                        height={500}
+                                                                    />
+                                                                    <a href={img.url} download className="absolute top-2 right-2 p-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-lg shadow-blue-500/20">
+                                                                        <Download size={16} className="text-white" />
+                                                                    </a>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center justify-center h-full">
+                                                            <p className="text-gray-500 text-sm">No icons generated yet</p>
+                                                        </div>
+                                                    )
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Settings Panel */}
+                                <div className="bg-[#111827] rounded-2xl border border-[#1F2937] shadow-xl shadow-black/20 overflow-hidden">
+                                    <div className="p-6">
+                                        <h2 className="text-white font-medium flex items-center gap-2 mb-6">
+                                            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                            Settings
+                                        </h2>
+                                        <div className="space-y-6">
+                                            {/* Quality Setting */}
+                                            <div className="relative">
+                                                <label className="text-gray-400 text-sm font-medium mb-2 block">Quality</label>
+                                                <div className="grid grid-cols-2 gap-2 bg-[#0A0F16] p-1 rounded-lg">
+                                                    <button
+                                                        onClick={() => setQuality("standard")}
+                                                        className={`py-2 px-4 text-xs lg:text-base rounded-md transition-all duration-300 ${quality === "standard"
+                                                            ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                            : "text-gray-400 hover:text-white"
+                                                            }`}
+                                                    >
+                                                        Standard
+                                                    </button>
+                                                    <div className="relative">
+                                                        <button
+                                                            onClick={() => {
+                                                                setQuality("hd")
+                                                                setDimension("medium")
+                                                                setModel("dall-e-3")
+                                                            }}
+                                                            className={`w-full py-2 px-4 text-xs lg:text-base rounded-md transition-all duration-300 ${quality === "hd"
+                                                                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                : "text-gray-400 hover:text-white"
+                                                                } ${subscription < 1 ? "opacity-50" : ""}`}
+                                                        >
+                                                            HD
+                                                        </button>
+                                                        {subscription < 1 && (
+                                                            <div onClick={() => { setSubspopup(true) }} className="bg-balck opacity-50 absolute inset-0 flex items-center justify-end pr-4 hover:cursor-pointer">
+                                                                
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Dimension Setting */}
+                                            <div className="relative">
+                                                <label className="text-gray-400 text-sm font-medium mb-2 block">Dimension</label>
+                                                <div className="grid grid-cols-3 gap-2 bg-[#0A0F16] p-1 rounded-lg">
+                                                    {["small", "medium", "large"].map((size, index) => {
+                                                        if((quality === "hd" || model === "dall-e-3") && size === "small") {
+                                                            return null
+                                                        } else {
+                                                            return (
+                                                                <div key={size} className="relative w-full">
+                                                                    <button
+                                                                        onClick={() => setDimension(size)}
+                                                                        className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${dimension === size
+                                                                            ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                            : "text-gray-400 hover:text-white"
+                                                                            } ${subscription < index && !session ? "opacity-50" : ""}`}
+                                                                    >
+                                                                        {size}
+                                                                    </button>
+                                                                    {subscription < index && size !== "small" && (
+                                                                        <div onClick={() => { setSubspopup(true) }} className="bg-black opacity-50 hover:cursor-pointer absolute inset-0 flex items-center justify-end pr-2">
+                                                                            
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )
+                                                        }
+                                                    })}
+                                                </div>
+                                            </div>
+
+                                            {/* Number of Icons and Model*/}
+                                            <div className="relative w-full flex flex-row gap-5">
+                                                <div className="flex flex-col">
+                                                    <label className="text-gray-400 text-sm font-medium mb-2 block">Icons</label>
+                                                    <div className="grid grid-cols-3 gap-2 bg-[#0A0F16] p-1 rounded-lg">
+                                                        <div className="relative w-full">
+                                                            <button
+                                                                onClick={() => setCount(1)}
+                                                                className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${count === 1
+                                                                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                    : "text-gray-400 hover:text-white"
+                                                                    } ${subscription < 0 && !session ? "opacity-50" : ""}`}
+                                                            >
+                                                                1
+                                                            </button>
+                                                        </div>
+                                                        <div className="relative w-full">
+                                                            <button
+                                                                onClick={() => setCount(3)}
+                                                                className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${count === 3
+                                                                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                    : "text-gray-400 hover:text-white"
+                                                                    } ${subscription < 1 && !session ? "opacity-50" : ""}`}
+                                                            >
+                                                                3
+                                                            </button>
+                                                            {subscription < 1 && (
+                                                                <div onClick={() => { setSubspopup(true) }} className="bg-black opacity-50 hover:cursor-pointer absolute inset-0 flex items-center justify-end pr-2">
+                                                                    
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="relative w-full">
+                                                            <button
+                                                                onClick={() => setCount(10)}
+                                                                className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${count === 10
+                                                                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                    : "text-gray-400 hover:text-white"
+                                                                    } ${subscription < 2 && !session ? "opacity-50" : ""}`}
+                                                            >
+                                                                10
+                                                            </button>
+                                                            {subscription < 2 && (
+                                                                <div onClick={() => { setSubspopup(true) }} className="bg-black opacity-50 hover:cursor-pointer absolute inset-0 flex items-center justify-end pr-2">
+                                                                    
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="grid grid-rows-2 gap-2 bg-[#0A0F16] p-1 rounded-lg">
+                                                    <div className="relative w-full">
+                                                        <button
+                                                            onClick={() => {
+                                                                if(quality!=="hd") setModel("dall-e-2")
+                                                            }}
+                                                            className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${model === "dall-e-2"
+                                                                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                : "text-gray-400 hover:text-white"
+                                                                } ${subscription < 0 && !session ? "opacity-50" : ""}`}
+                                                        >
+                                                            Dall-e-2
+                                                        </button>
+                                                    </div>
+                                                    <div className="relative w-full">
+                                                        <button
+                                                            onClick={() => setModel("dall-e-3")}
+                                                            className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${model === "dall-e-3"
+                                                                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                : "text-gray-400 hover:text-white"
+                                                                } ${subscription < 1 && !session ? "opacity-50" : ""}`}
+                                                        >
+                                                            Dall-e-3
+                                                        </button>
+                                                        {subscription < 1 && (
+                                                            <div onClick={() => { setSubspopup(true) }} className="bg-black opacity-50 hover:cursor-pointer absolute inset-0 flex items-center justify-end pr-2">
+                                                                
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Generate Button */}
+                                            <button
+                                                onClick={generateIcon}
+                                                className="w-full py-3 text-sm lg:text-base px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
+                                            >
+                                                <Sparkles size={18} />
+                                                Generate Icon
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -315,57 +402,5 @@ export default function Home() {
                 </div>
             </div>
         </>
-    );
-}
-
-function SubscriptionPopup({ close }: { close: React.Dispatch<React.SetStateAction<boolean>> }) {
-    return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-[#111827] w-full max-w-[384px] rounded-2xl border border-[#1F2937] shadow-2xl">
-                <div className="p-4 sm:p-6">
-                    <div className="flex items-center justify-between mb-4 sm:mb-6">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                            <div className="p-1.5 sm:p-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg shadow-lg shadow-blue-500/20">
-                                <Crown size={18} className="text-white sm:w-5 sm:h-5" />
-                            </div>
-                            <h2 className="text-lg sm:text-xl font-bold text-white">Upgrade to Pro</h2>
-                        </div>
-                        <button
-                            onClick={() => close(false)}
-                            className="text-gray-500 hover:text-gray-400 transition-colors duration-300"
-                        >
-                            <X size={18} className="sm:w-5 sm:h-5" />
-                        </button>
-                    </div>
-
-                    <div className="space-y-4 sm:space-y-6">
-                        <p className="text-sm sm:text-base text-gray-400">
-                            Unlock premium features and enhance your creative workflow!
-                        </p>
-
-                        <div className="bg-[#0A0F16] rounded-xl p-3 sm:p-4 border border-[#1F2937]">
-                            <ul className="space-y-2 sm:space-y-3">
-                                {["HD Quality Generation", "Larger Dimensions", "Priority Processing"].map((feature) => (
-                                    <li key={feature} className="flex items-center gap-2 sm:gap-3 text-sm sm:text-base text-gray-300">
-                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                                        {feature}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
-                            <span className="text-xs sm:text-sm text-gray-500">Starting at $4.59/mo</span>
-                            <a
-                                href="/pricing"
-                                className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white text-center rounded-xl font-medium transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-blue-500/20"
-                            >
-                                Upgrade Now
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     );
 }

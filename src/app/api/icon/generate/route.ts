@@ -33,13 +33,19 @@ const formatPrompt = (mode: string, prompt: string): string => {
 
 export async function POST(req: NextRequest) {
     try {
-        const { prompt, model, quality, size, style, mode } = await req.json()
+        const { prompt, model, quality, size, style, mode, count } = await req.json()
         const session = await getServerSession(authOptions)
         const userAccount = await db.account.findFirst({
             where: {
                 userId: session?.user.id
             }
         })
+        if(!userAccount) {
+            return NextResponse.json({
+                success: 0,
+                msg: "No account found"
+            })
+        }
         if(userAccount
              && ((model === "dall-e-2" && userAccount.credits < 1)
              || (model === "dall-e-3" && userAccount.credits < 2))) {
@@ -51,6 +57,14 @@ export async function POST(req: NextRequest) {
                 status: 409
             })
         }
+        if(userAccount) {
+            if(userAccount.subscription < 1 && (model === "dall-e-3" || quality === "hd" || count > 1 || mode !== "" || size !== "512x512")) {
+                return NextResponse.json({
+                    success: 1,
+                    msg: "Upgrade your plan"
+                })
+            }
+        }
         console.log({
             prompt: formatPrompt(mode, prompt),
             model: model,
@@ -61,7 +75,7 @@ export async function POST(req: NextRequest) {
         const openaiRequest: ImageGenerateParams = {
             prompt: formatPrompt(mode, prompt),
             model: model,
-            n: 1,
+            n: count,
             quality: quality,
             size: size,
             style: style,

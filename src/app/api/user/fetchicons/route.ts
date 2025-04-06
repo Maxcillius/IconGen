@@ -43,7 +43,7 @@ export async function GET() {
         }))
         return NextResponse.json({
             success: 1,
-            contents: urls
+            contents: urls,
         })
     } catch(err) {
         console.log(err)
