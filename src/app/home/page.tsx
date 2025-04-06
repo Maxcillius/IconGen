@@ -300,56 +300,25 @@ export default function Home() {
                                             </div>
 
                                             {/* Number of Icons and Model*/}
-                                            <div className="relative w-full flex flex-row gap-5">
+                                            <div className="relative flex flex-col gap-5">
                                                 <div className="flex flex-col">
                                                     <label className="text-gray-400 text-sm font-medium mb-2 block">Icons</label>
                                                     <div className="grid grid-cols-3 gap-2 bg-[#0A0F16] p-1 rounded-lg">
-                                                        <div className="relative w-full">
-                                                            <button
+                                                        <div className="relative w-fit">
+                                                            <input
+                                                                defaultValue={1}
+                                                                onChange={(e) => {setCount(Number(e.target.value))}}
+                                                                min={1}
+                                                                max={10}
+                                                                type="number"
                                                                 onClick={() => setCount(1)}
-                                                                className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${count === 1
-                                                                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                    : "text-gray-400 hover:text-white"
-                                                                    } ${subscription < 0 && !session ? "opacity-50" : ""}`}
+                                                                className="appreance-none w-full py-2 px-4 text-xs lg:text-base rounded-md focus:outline-none capitalize bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
                                                             >
-                                                                1
-                                                            </button>
-                                                        </div>
-                                                        <div className="relative w-full">
-                                                            <button
-                                                                onClick={() => setCount(3)}
-                                                                className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${count === 3
-                                                                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                    : "text-gray-400 hover:text-white"
-                                                                    } ${subscription < 1 && !session ? "opacity-50" : ""}`}
-                                                            >
-                                                                3
-                                                            </button>
-                                                            {subscription < 1 && (
-                                                                <div onClick={() => { setSubspopup(true) }} className="bg-black opacity-50 hover:cursor-pointer absolute inset-0 flex items-center justify-end pr-2">
-                                                                    
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                        <div className="relative w-full">
-                                                            <button
-                                                                onClick={() => setCount(10)}
-                                                                className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${count === 10
-                                                                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                    : "text-gray-400 hover:text-white"
-                                                                    } ${subscription < 2 && !session ? "opacity-50" : ""}`}
-                                                            >
-                                                                10
-                                                            </button>
-                                                            {subscription < 2 && (
-                                                                <div onClick={() => { setSubspopup(true) }} className="bg-black opacity-50 hover:cursor-pointer absolute inset-0 flex items-center justify-end pr-2">
-                                                                    
-                                                                </div>
-                                                            )}
+                                                            </input>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="grid grid-rows-2 gap-2 bg-[#0A0F16] p-1 rounded-lg">
+                                                <div className="grid grid-cols-2 gap-2 bg-[#0A0F16] p-1 rounded-lg">
                                                     <div className="relative w-full">
                                                         <button
                                                             onClick={() => {

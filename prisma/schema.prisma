@@ -10,7 +10,7 @@ generator client {
 model Account {
   id                String  @id @default(cuid())
   credits           Int     @default(1)
-  subscription      Int     @default(0)
+  subscription      Int     @default(2)
   userId            String
   type              String
   provider          String
@@ -24,7 +24,7 @@ model Account {
   session_state     String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-  bills             Billing[]
+  bills             Order[]
   
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -59,11 +59,19 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Billing {
-  id         String      @id
-  userId     Account     @relation(fields: [id], references: [id], onDelete: Cascade)
-  paymentId  String
-  credits    Int
-  Date       DateTime
-  status     String    
+
+model Order {
+  id             String   @id
+  userId         Account     @relation(fields: [id], references: [id], onDelete: Cascade)
+  orderId        String   @unique
+  paymentId      String?
+  amount         Int
+  currency       String   @default("INR")
+  status         String
+  email          String
+  name           String
+  contact        String?
+  receipt        String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }

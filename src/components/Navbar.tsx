@@ -25,7 +25,9 @@ export default function Navbar() {
     const navItems = [
       { name: "Profile", href: "/user/profile", current: section === "user" ? true : false },
       { name: "Home", href: "/home", current: section === "home" ? true : false },
-      { name: "Pricing", href: "/pricing", current: section === "pricing" ? true : false },
+      { name: "Tokens", href: "/token", current: section === "token" ? true : false },
+      { name: "Features", href: "/features", current: section === "features" ? true : false },
+      // { name: "Pricing", href: "/pricing", current: section === "pricing" ? true : false },
     ]
 
     const {data: session, status} = useSession()

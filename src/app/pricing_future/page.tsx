@@ -43,7 +43,7 @@ export default function Pricing() {
                   {[
                     { feature: 'Tokens', values: ['01 /day', '50', '120', 'Unlimited'] },
                     { feature: 'Dimension', values: ['Small', 'Small\nMedium', 'All', 'All'] },
-                    { feature: 'Model', values: ['v2', 'v2\nv3', 'v2\nv3', 'v2\nv3'] },
+                    { feature: 'Model', values: ['dall-e-2', 'dall-e-2\ndall-e3', 'dall-e-2\ndall-e-3', 'dall-e-2\ndall-e-3'] },
                     { feature: 'Multiple generation', values: ['-', '-', '3', '10'] },
                     { feature: 'Styles', values: ['-', true, true, true] },
                     { feature: 'Server speed', values: ['-', '-', true, true] },

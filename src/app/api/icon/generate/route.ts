@@ -35,6 +35,15 @@ export async function POST(req: NextRequest) {
     try {
         const { prompt, model, quality, size, style, mode, count } = await req.json()
         const session = await getServerSession(authOptions)
+        if(!session) {
+            return NextResponse.json({
+                success: 0,
+                msg: "Not Authorized"
+            },
+            {
+                status: 401
+            })
+        }
         const userAccount = await db.account.findFirst({
             where: {
                 userId: session?.user.id
@@ -46,9 +55,8 @@ export async function POST(req: NextRequest) {
                 msg: "No account found"
             })
         }
-        if(userAccount
-             && ((model === "dall-e-2" && userAccount.credits < 1)
-             || (model === "dall-e-3" && userAccount.credits < 2))) {
+        const cost = count * ( model === "dall-e-2" ? 1 : 2)
+        if(userAccount && userAccount.credits < cost) {
             return NextResponse.json({
                 success: 0,
                 msg: "Insufficient funds"
@@ -57,14 +65,14 @@ export async function POST(req: NextRequest) {
                 status: 409
             })
         }
-        if(userAccount) {
-            if(userAccount.subscription < 1 && (model === "dall-e-3" || quality === "hd" || count > 1 || mode !== "" || size !== "512x512")) {
-                return NextResponse.json({
-                    success: 1,
-                    msg: "Upgrade your plan"
-                })
-            }
-        }
+        // if(userAccount) {
+        //     if(userAccount.subscription < 1 && (model === "dall-e-3" || quality === "hd" || count > 1 || mode !== "" || size !== "512x512")) {
+        //         return NextResponse.json({
+        //             success: 1,
+        //             msg: "Upgrade your plan"
+        //         })
+        //     }
+        // }
         console.log({
             prompt: formatPrompt(mode, prompt),
             model: model,
@@ -94,26 +102,26 @@ export async function POST(req: NextRequest) {
                         id: account?.id
                     },
                     data: {
-                        credits: { decrement: model === "dall-e-2" ? 1 : 2 }
+                        credits: { decrement: cost }
                     }
                 })
-                const response = await axios({
-                    method: "GET",
-                    url: image.data[0].url,
-                    responseType: "arraybuffer",
-                })
-                
-                const uniqueKey = `${Date.now()}`
-                const command = new PutObjectCommand({
-                    Bucket: process.env.BUCKET_NAME as string,
-                    Key: `userIcons/${session?.user.id}/${uniqueKey}`,
-                    Body: response.data,
-                    ContentType: "image/png"
-                })
-                await s3.send(command)
+                for(const i in image.data) {
+                    const imageUrl = image.data[i].url as string
+                    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' })
+                    const buffer = Buffer.from(response.data, 'binary')
+                    const fileName = `icon-${Date.now()}-${i}.png`
+                    const uploadParams = {
+                        Bucket: process.env.S3_BUCKET_NAME,
+                        Key: fileName,
+                        Body: buffer,
+                        ContentType: 'image/png'
+                    }
+                    await s3.send(new PutObjectCommand(uploadParams))
+                }
                 return NextResponse.json({
                     success: 1,
-                    url: image.data[0].url
+                    msg: "Image generated successfully",
+                    contents: image.data
                 })
             } else {
                 return NextResponse.json({

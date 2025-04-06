@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react';
-import Script from 'next/script';
+import { useState } from 'react'
+import Script from 'next/script'
 
 
 declare global {
@@ -44,7 +44,7 @@ interface OrderResponse {
     status: string;
 }
 
-const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({amount, name, email, contact, onSuccess, onFailure}) => {
+const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({ amount, name, email, contact, onSuccess, onFailure }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [paymentSuccess, setPaymentSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -54,29 +54,28 @@ const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({amount, name, email, c
         setError(null);
 
         try {
-            const response = await fetch('/api/createorder', {
+            const response = await fetch('/api/payment/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     amount,
-                    receipt: `receipt_${Date.now()}`,
+                    receipt: `receipt_${email}_${name}_${Date.now()}`,
                 }),
             })
             const data = await response.json()
-            console.log(data)
             if (data.success === 0) {
-                throw new Error(data.msg)   
+                throw new Error(data.msg)
             }
             const options = {
-                key: process.env.RAZORPAY_KEY_ID,
-                amount: data.info.amount,
-                currency: data.info.currency,
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                amount: data.order.amount,
+                currency: data.order.currency,
                 name: 'IconGen',
                 description: 'Payment for your service',
-                order_id: data.info.id,
-                prefill: {name, email, contact},
+                order_id: data.order.id,
+                prefill: { name, email, contact },
                 notes: {
                     address: 'Your Company Address',
                 },
@@ -96,7 +95,7 @@ const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({amount, name, email, c
             paymentObject.open();
 
             paymentObject.on('payment.failed', function (response: RazorpayFailureResponse) {
-                setError(`Payment failed: ${response.error.description}`);
+                setError(`Payment failed`);
 
                 if (onFailure) {
                     onFailure(response);
@@ -112,7 +111,7 @@ const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({amount, name, email, c
 
     async function verifyPayment(paymentData: RazorpaySuccessResponse): Promise<void> {
         try {
-            const response = await fetch('/api/verifyPayment', {
+            const response = await fetch('/api/payment/webhook', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -127,7 +126,7 @@ const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({amount, name, email, c
             console.log('Payment verified successfully');
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Error verifying payment';
-            console.error(errorMessage);
+            console.log(errorMessage);
         }
     }
 

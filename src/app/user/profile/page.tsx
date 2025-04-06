@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { CreditCard, Settings, User, Image, ChevronRight, LogOut } from "lucide-react"
 import { redirect } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
+import Link from "next/link"
 
 export default function Profile() {
 
@@ -140,20 +141,21 @@ export default function Profile() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
+            {/* <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Purchase Credits</h3>
               <div className="space-y-4">
                 {[{tokens: 50, amount: 459}, {tokens: 120, amount: 1059}].map((amount) => (
-                  <button
-                    key={amount.amount}
-                    className="w-full bg-[#1F2937] hover:bg-[#2D3748] p-4 rounded-xl transition-colors"
-                  >
-                    <span className="text-lg font-medium">{amount.tokens} Credits</span>
-                    <span className="block text-sm text-gray-400 mt-1">${amount.amount / 100}</span>
-                  </button>
+                  <Link href={"/token"} key={amount.amount}>
+                    <button
+                      className="w-full bg-[#1F2937] hover:bg-[#2D3748] p-4 rounded-xl transition-colors"
+                    >
+                      <span className="text-lg font-medium">{amount.tokens} Credits</span>
+                      <span className="block text-sm text-gray-400 mt-1">${amount.amount / 100}</span>
+                    </button>
+                  </Link>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Billing History</h3>
