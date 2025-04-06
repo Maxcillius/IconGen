@@ -37,9 +37,9 @@ export default function App() {
         <header className="relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
             <div className="text-center">
-              <div className="flex justify-center mb-8">
+              {/* <div className="flex justify-center mb-8">
                 <Icons className="h-16 w-16 text-indigo-500" />
-              </div>
+              </div> */}
               <h1 className="text-3xl lg:text-5xl font-bold text-white mb-6">
                 Transform Your Ideas into{" "}
                 <TypewriterText text="Beautiful Icons" />

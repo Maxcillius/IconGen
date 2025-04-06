@@ -1,7 +1,7 @@
 "use client"
 
 import { dall2, dall3 } from "../../interfaces/dimensions"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Download, Trash2, Info, Sparkles } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setPopupState } from "@/state/popup/popup";
@@ -12,7 +12,7 @@ import Pixel from "@/images/pixel.png"
 import Vector from "@/images/vector.png"
 import { StaticImageData } from "next/image"
 import Styles from "@/components/Styles";
-import SubscriptionPopup from "@/components/SubscriptionPopup";
+// import SubscriptionPopup from "@/components/SubscriptionPopup";
 
 export default function Home() {
     const [quality, setQuality] = useState("standard")
@@ -21,11 +21,11 @@ export default function Home() {
     const [prompt, setPrompt] = useState("")
     const [error, setError] = useState("")
     const [imageLink, setImageLink] = useState<{url: string}[]>([])
-    const [subspopup, setSubspopup] = useState(false)
+    // const [subspopup, setSubspopup] = useState(false)
     const [generating, setGenerating] = useState(false)
     const [model, setModel] = useState("dall-e-2")
     const [mode, setMode] = useState("Pixel")
-    const [subscription, setSubscription] = useState(-1)
+    // const [subscription, setSubscription] = useState(-1)
 
     const modeImages: Record<string, StaticImageData> = {
         "Sticker": Sticker,
@@ -41,14 +41,6 @@ export default function Home() {
 
     const { data: session, status } = useSession()
     const setVisibility = useDispatch()
-
-    useEffect(() => {
-        if (session?.user && status === "authenticated") {
-            setSubscription((session.user as { sub?: number }).sub ?? -1)
-        } else {
-            setSubscription(-1)
-        }
-    }, [])
 
     const generateIcon = async () => {
         if(window.screen.width < 500) {
@@ -74,7 +66,7 @@ export default function Home() {
                         model: model,
                         quality: quality,
                         size: quality === "hd" ? dall3[dimension] : dall2[dimension],
-                        style: "natural",
+                        style: "vivid",
                         count: count
                     })
                 }
@@ -86,7 +78,7 @@ export default function Home() {
                     setGenerating(false)
                     return
                 }
-                setImageLink(data.data)
+                setImageLink(data.contents)
             })
         } catch (error) {
             console.log(error)
@@ -98,7 +90,7 @@ export default function Home() {
         <>
             <div className="h-16 w-full"></div>
             <div className="min-h-screen bg-[#0A0F16]">
-                {subspopup && <SubscriptionPopup close={setSubspopup} />}
+                {/* {subspopup && <SubscriptionPopup close={setSubspopup} />} */}
 
                 {/* Main Content */}
                 <div className="container mx-auto px-4 py-12">
@@ -109,13 +101,12 @@ export default function Home() {
                                 modes.map((style) => {
                                     return (
                                         <div key={style.id} onClick={() => {
-                                            if(subscription >= 1) setMode(style.id)
-                                        }} className={`${ subscription < 1 ? "bg-black opacity-50": "" } relative hover:cursor-pointer`}>
+                                            setMode(style.id)
+                                        }} className={`relative hover:cursor-pointer`}>
                                             <div className={`absolute w-full h-full rounded-xl ${mode === style.id ? "border-4 border-blue-600" : ""}`}></div>
                                             <Image src={modeImages[style.id]} alt="icon"
                                                 className={`w-28 h-28 rounded-xl`}
                                             >
-
                                             </Image>
                                         </div>
                                     )
@@ -189,12 +180,12 @@ export default function Home() {
                                                     <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
                                                     Preview
                                                 </h2>
-                                                {
-                                                    generating &&
-                                                    <div className="w-4 h-4 rounded-full border-blue-500 border-2 border-t-transparent animate-spin"></div>
-                                                }
                                             </div>
                                             <div className="relative bg-[#0A0F16] rounded-xl border border-[#1F2937] p-4 lg:p-8 flex items-center justify-center">
+                                                {
+                                                    generating &&
+                                                    <div className="w-12 h-12 rounded-full border-blue-500 border-2 border-t-transparent animate-spin"></div>
+                                                }
                                                 {
                                                     imageLink && imageLink.length > 0 ? (
                                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
@@ -214,6 +205,7 @@ export default function Home() {
                                                             ))}
                                                         </div>
                                                     ) : (
+                                                        !generating &&
                                                         <div className="flex items-center justify-center h-full">
                                                             <p className="text-gray-500 text-sm">No icons generated yet</p>
                                                         </div>
@@ -255,15 +247,10 @@ export default function Home() {
                                                             className={`w-full py-2 px-4 text-xs lg:text-base rounded-md transition-all duration-300 ${quality === "hd"
                                                                 ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
                                                                 : "text-gray-400 hover:text-white"
-                                                                } ${subscription < 1 ? "opacity-50" : ""}`}
+                                                                }`}
                                                         >
                                                             HD
                                                         </button>
-                                                        {subscription < 1 && (
-                                                            <div onClick={() => { setSubspopup(true) }} className="bg-balck opacity-50 absolute inset-0 flex items-center justify-end pr-4 hover:cursor-pointer">
-                                                                
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -283,15 +270,10 @@ export default function Home() {
                                                                         className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${dimension === size
                                                                             ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
                                                                             : "text-gray-400 hover:text-white"
-                                                                            } ${subscription < index && !session ? "opacity-50" : ""}`}
+                                                                            }`}
                                                                     >
                                                                         {size}
                                                                     </button>
-                                                                    {subscription < index && size !== "small" && (
-                                                                        <div onClick={() => { setSubspopup(true) }} className="bg-black opacity-50 hover:cursor-pointer absolute inset-0 flex items-center justify-end pr-2">
-                                                                            
-                                                                        </div>
-                                                                    )}
                                                                 </div>
                                                             )
                                                         }
@@ -327,7 +309,7 @@ export default function Home() {
                                                             className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${model === "dall-e-2"
                                                                 ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
                                                                 : "text-gray-400 hover:text-white"
-                                                                } ${subscription < 0 && !session ? "opacity-50" : ""}`}
+                                                                }`}
                                                         >
                                                             Dall-e-2
                                                         </button>
@@ -338,15 +320,10 @@ export default function Home() {
                                                             className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${model === "dall-e-3"
                                                                 ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
                                                                 : "text-gray-400 hover:text-white"
-                                                                } ${subscription < 1 && !session ? "opacity-50" : ""}`}
+                                                                }`}
                                                         >
                                                             Dall-e-3
                                                         </button>
-                                                        {subscription < 1 && (
-                                                            <div onClick={() => { setSubspopup(true) }} className="bg-black opacity-50 hover:cursor-pointer absolute inset-0 flex items-center justify-end pr-2">
-                                                                
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 </div>
                                             </div>

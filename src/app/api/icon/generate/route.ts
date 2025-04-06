@@ -109,9 +109,9 @@ export async function POST(req: NextRequest) {
                     const imageUrl = image.data[i].url as string
                     const response = await axios.get(imageUrl, { responseType: 'arraybuffer' })
                     const buffer = Buffer.from(response.data, 'binary')
-                    const fileName = `icon-${Date.now()}-${i}.png`
+                    const fileName = `userIcons/${session.user.id}/icon-${Date.now()}-${i}.png`
                     const uploadParams = {
-                        Bucket: process.env.S3_BUCKET_NAME,
+                        Bucket: process.env.BUCKET_NAME,
                         Key: fileName,
                         Body: buffer,
                         ContentType: 'image/png'
