@@ -4,7 +4,7 @@ import db from "@/db/db";
 
 export async function POST(req: NextRequest) {
     try {
-        const rawBody = await req.text();
+        const rawBody = await req.text()
         const signature = req.headers.get("x-razorpay-signature");
         if (!signature) {
             return NextResponse.json({
@@ -36,6 +36,8 @@ export async function POST(req: NextRequest) {
 
         if (event.event === "payment.captured") {
             const payment = event.payload.payment.entity;
+            console.log(event)
+            console.log(payment)
             try {
                 const order = await db.order.findUnique({
                     where: {
@@ -61,6 +63,7 @@ export async function POST(req: NextRequest) {
                         orderId: payment.order_id
                     },
                     data: {
+                        paymentId: payment.paymentId,
                         status: "completed"
                     }
                 })

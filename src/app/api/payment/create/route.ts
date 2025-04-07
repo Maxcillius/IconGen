@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
         }
 
         const order = await razorpayClient.orders.create(options);
+        console.log(order)
         if(!order) {
             return NextResponse.json({
                 success: 0,
@@ -85,7 +86,6 @@ export async function POST(req: NextRequest) {
                 name: session.user.name,
             }
         })
-        console.log(order as OrderData)
         return NextResponse.json({
             success: 1,
             order: order as OrderData

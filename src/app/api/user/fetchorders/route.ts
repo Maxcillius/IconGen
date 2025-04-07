@@ -1,9 +1,7 @@
-export const dynamic = "force-dynamic";
-
 import { NextResponse } from "next/server"
-import db from "@/db/db";
 import authOptions from "@/lib/auth";
 import { getServerSession } from "next-auth";
+import db from "@/db/db";
 
 export async function GET() {
     try {
@@ -25,26 +23,35 @@ export async function GET() {
         if(!account) {
             return NextResponse.json({
                 success: 0,
-                msg: "No Account found"
+                msg: "No account found"
+            },
+            {
+                status: 404
             })
         }
-        const icons = await db.icons.findMany({
+        const orders = await db.order.findMany({
             where: {
                 id: account.id
             }
         })
-        let urls: {key: string, url: string}[] = []
-        if(icons) {
-            urls = icons.map((icon) => {
-                return {
-                    key: icon.name,
-                    url: icon.avatarKey
-                }
+        // console.log(orders)
+        if(!orders) {
+            return NextResponse.json({
+                success: 0,
+                msg: "No orders found"
             })
         }
+
         return NextResponse.json({
             success: 1,
-            contents: urls,
+            orders: orders.map((order) => {
+                return {
+                    id: order.orderId,
+                    amount: order.amount,
+                    status: order.status,
+                    date: order.createdAt.toLocaleDateString()
+                }
+            })
         })
     } catch(err) {
         console.log(err)

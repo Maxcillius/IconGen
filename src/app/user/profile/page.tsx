@@ -9,6 +9,7 @@ export default function Profile() {
 
   const [activeSection, setActiveSection] = useState("profile")
   const [icons, setIcons] = useState<[{ key: string, url: string }] | []>([])
+  const [orders, setOrders] = useState<{id: string, amount: number, status: string, date: string}[]>([])
   const [credits, setCredits] = useState("NA")
   const [show, setShow] = useState("")
   const [imageUrl, setImageUrl] = useState('');
@@ -49,6 +50,7 @@ export default function Profile() {
       if (!data.success) {
         return
       }
+      console.log(data)
       const array: [{ key: string, url: string }] = data.contents.map((obj: { key: string, url: string }) => {
         return {
           key: obj.key,
@@ -57,23 +59,31 @@ export default function Profile() {
       })
       setIcons(array)
     })
+
+    await fetch("/api/user/fetchorders",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    ).then((response) => response.json()).then((data) => {
+      if(data.success === 0) {
+        return
+      }
+      setOrders(data.orders)
+    })
   }
 
 
   const handleDownload = async (url: string) => {
-    console.log(url)
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const blobUrl = window.URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = 'image.png';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    window.URL.revokeObjectURL(blobUrl);
+    const imgUrl = url;
+    const a = document.createElement('a');
+    a.href = imgUrl;
+    a.download = 'icon.png'
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
 
   useEffect(() => {
@@ -158,23 +168,20 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-1 gap-6">
           <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
             <h3 className="text-lg font-semibold text-white mb-4">Billing History</h3>
-            <div className="space-y-4">
-              {[
-                { date: "2024-03-15", amount: 500, status: "Completed" },
-                { date: "2024-02-28", amount: 1000, status: "Completed" },
-              ].map((transaction, index) => (
+            <div className="space-y-4 h-96 overflow-y-scroll">
+              {orders && orders.map((transaction, index) => (
                 <div
                   key={index}
                   className="flex items-center justify-between p-4 bg-[#1F2937] rounded-xl"
                 >
-                  <div>
-                    <p className="font-medium">{transaction.amount} Credits</p>
+                  <div className="flex flex-col justify-center gap-4">
+                    <p className="font-medium">{transaction.amount === 1459 ? 250 : transaction.amount === 959 ? 120 : 50} Credits</p>
                     <p className="text-sm text-gray-400">{transaction.date}</p>
                   </div>
-                  <span className="text-emerald-400">{transaction.status}</span>
+                  <span className={`${ transaction.status === "completed" ? "text-emerald-400" : "text-red-400"}`}>{transaction.status}</span>
                 </div>
               ))}
             </div>
@@ -210,14 +217,14 @@ export default function Profile() {
             key={index}
             className="group relative aspect-square bg-[#0D1219] rounded-2xl border border-[#1F2937] overflow-hidden"
           >
-            <img src={image.url} alt={`Media ${image.key}`} className="w-full h-full object-cover" />
+            <img src={"https://d2sp6678va8qfs.cloudfront.net/" + image.url} alt={`Media ${image.key}`} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <div className="flex space-x-2">
-                  <button onClick={() => { setShow(image.url) }} className="flex-1 bg-white/10 backdrop-blur-sm py-2 rounded-lg text-white text-sm hover:bg-white/20 transition-colors">
+                  <button onClick={() => { setShow("https://d2sp6678va8qfs.cloudfront.net/" + image.url) }} className="flex-1 bg-white/10 backdrop-blur-sm py-2 rounded-lg text-white text-sm hover:bg-white/20 transition-colors">
                     View
                   </button>
-                  <button onClick={() => {handleDownload(image.url)}} className="flex-1 bg-white/10 backdrop-blur-sm py-2 rounded-lg text-white text-sm hover:bg-white/20 transition-colors">
+                  <button onClick={() => {handleDownload("https://d2sp6678va8qfs.cloudfront.net/" + image.url)}} className="flex-1 bg-white/10 backdrop-blur-sm py-2 rounded-lg text-white text-sm hover:bg-white/20 transition-colors">
                     Download
                   </button>
                 </div>
@@ -284,96 +291,11 @@ export default function Profile() {
   )
 }
 
-const renderSecurity = () => (
-  <>
-    <h1 className="text-xl lg:text-3xl font-bold text-white mb-8">Security Settings</h1>
-    <div className="space-y-6">
-      <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
-        <h3 className="text-md lg:text-lg font-semibold text-white mb-4">Two-Factor Authentication</h3>
-        <p className="text-gray-400 mb-4 text-sm lg:text-base">Add an extra layer of security to your account</p>
-        <button className="text-xs lg:text-base px-6 py-3 bg-[#1F2937] rounded-xl text-white font-medium hover:bg-[#2D3748] transition-colors">
-          Enable 2FA
-        </button>
-      </div>
-
-      <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
-        <h3 className="text-md lg:text-lg font-semibold text-white mb-4">Password</h3>
-        <p className="text-gray-400 mb-4 text-sm lg:text-base">Change your password regularly to keep your account secure</p>
-        <button className="text-xs lg:text-base px-6 py-3 bg-[#1F2937] rounded-xl text-white font-medium hover:bg-[#2D3748] transition-colors">
-          Change Password
-        </button>
-      </div>
-
-      <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">Active Sessions</h3>
-        <div className="space-y-4">
-          {[
-            { device: "MacBook Pro", location: "New York, US", current: true },
-            { device: "iPhone 13", location: "New York, US", current: false },
-          ].map((session, index) => (
-            <div key={index} className="flex items-center justify-between p-4 bg-[#1F2937] rounded-xl">
-              <div>
-                <p className="font-medium text-white">
-                  {session.device}
-                  {session.current && (
-                    <span className="ml-2 text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full">
-                      Current
-                    </span>
-                  )}
-                </p>
-                <p className="text-sm text-gray-400">{session.location}</p>
-              </div>
-              {!session.current && (
-                <button className="text-red-400 hover:text-red-300 transition-colors">
-                  Revoke
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </>
-);
 
 const renderSettings = () => (
   <>
     <h1 className="text-lg lg:text-3xl font-bold text-white mb-8">Account Settings</h1>
     <div className="space-y-6">
-      {/* <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
-          <h3 className="text-md lg:text-lg font-semibold text-white mb-4">Notifications</h3>
-          {["Email notifications", "Push notifications", "Monthly newsletter"].map((setting, index) => (
-            <div key={index} className="flex items-center justify-between py-4">
-              <span className="text-gray-300 text-sm lg:text-base">{setting}</span>
-              <button className="w-12 h-6 bg-[#1F2937] rounded-full relative">
-                <div className="absolute left-1 top-1 w-4 h-4 bg-gray-400 rounded-full"></div>
-              </button>
-            </div>
-          ))}
-        </div> */}
-
-      {/* <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
-          <h3 className="text-md lg:text-lg font-semibold text-white mb-4">Language & Region</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-gray-400 mb-2 text-sm lg:text-base">Language</label>
-              <select className="w-full bg-[#1F2937] text-white px-4 py-3 rounded-xl text-xs lg:text-base">
-                <option>English (US)</option>
-                <option>Spanish</option>
-                <option>French</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-gray-400 mb-2 text-sm lg:text-base">Time Zone</label>
-              <select className="w-full bg-[#1F2937] text-white px-4 py-3 rounded-xl text-xs lg:text-base">
-                <option>Eastern Time (ET)</option>
-                <option>Pacific Time (PT)</option>
-                <option>UTC</option>
-              </select>
-            </div>
-          </div>
-        </div> */}
-
       <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
         <h3 className="text-md lg:text-lg font-semibold text-white mb-4">Danger Zone</h3>
         <p className="text-gray-400 mb-4 text-sm lg:text-base">Once you delete your account, there is no going back.</p>

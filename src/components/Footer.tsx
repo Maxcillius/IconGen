@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 py-4 sm:py-6 px-4 sm:px-8">
@@ -13,30 +15,30 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-sm sm:text-base">
-          <a
-            href="#feedback"
+          {/* <Link
+            href="/feedback/submit"
             className="hover:text-blue-400 text-[8px] lg:text-xs transition-colors duration-300 px-2 py-1"
           >
             Submit Feedback
-          </a>
-          <a
-            href="#contact"
+          </Link> */}
+          <Link
+            href="/termsofservice"
             className="hover:text-blue-400 text-[8px] lg:text-xs transition-colors duration-300 px-2 py-1"
           >
-            Contact
-          </a>
-          <a
-            href="#instagram"
+            Terms of Service
+          </Link>
+          <Link
+            href="/privacypolicy"
             className="hover:text-blue-400 text-[8px] lg:text-xs transition-colors duration-300 px-2 py-1"
           >
-            Instagram
-          </a>
-          <a
-            href="#twitter"
+            Privacy Policy
+          </Link>
+          <Link
+            href="/refundpolicy"
             className="hover:text-blue-400 text-[8px] lg:text-xs transition-colors duration-300 px-2 py-1"
           >
-            Twitter
-          </a>
+            Refund Policy
+          </Link>
         </div>
       </div>
     </footer>

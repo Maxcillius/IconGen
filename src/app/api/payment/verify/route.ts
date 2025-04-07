@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
         const order = await db.order.findUnique({
             where: {
-                orderId: razorpay_order_id.order_id,
+                orderId: razorpay_order_id,
             }
         })
 

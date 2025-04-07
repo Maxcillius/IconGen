@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IconGenerator",
+  title: "IconGen",
   description: "Generate Icons with AI",
 };  
 

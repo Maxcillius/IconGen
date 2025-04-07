@@ -13,7 +13,10 @@ const openai = new OpenAI();
 const MODES = {
     STICKER: 'Sticker',
     PIXEL: 'Pixel',
-    VECTOR: 'Vector'
+    VECTOR: 'Vector',
+    CLAY: 'Clay',
+    DOODLE: 'Doodle',
+    FLAT: 'Flat'
 } as const
 type PromptMode = typeof MODES[keyof typeof MODES];
 const promptTemplates: Record<PromptMode, (prompt: string) => string> = {
@@ -23,6 +26,12 @@ const promptTemplates: Record<PromptMode, (prompt: string) => string> = {
         `Design a **pixel art icon of ${prompt}**, clean pixel rendering. Keep the design **simple and iconic**, without unnecessary extra details and fully white background. Use **proper lighting and contrast** to enhance clarity while maintaining a **true pixel art aesthetic**. Ensure the subject is instantly recognizable and visually appealing. DO NOT add any background or additional elements—keep it as an isolated icon. just use it AS-IS. **No grid**`,
     [MODES.VECTOR]: (prompt) =>
         `A clean and precise **vector icon of ${prompt}**, without unnecessary extra details. designed with sharp lines and a flat, minimalistic style. It must be made with polygons. The icon should use a limited color palette with no gradients, shadows, or unnecessary details. Ensure a bold, well-defined outline for clarity and scalability. The background should be fully white. DO NOT add any background or additional elements—keep it as an isolated icon. just use it AS-IS.`,
+    [MODES.CLAY]: (prompt) =>
+        `A **${prompt} icon in claymorphic 3D style**, soft rounded edges, pastel color palette, realistic soft shadows, subtle lighting, minimal background, cute and slightly playful — rendered like soft clay or plasticine, modern and clean aesthetic. just use it AS-IS.`,
+    [MODES.DOODLE]: (prompt) => 
+        `A **${prompt} icon in doodle/sketch style**, hand-drawn with imperfect lines, rough pencil or ink strokes, playful and casual look, black and white or simple color fill, minimal detail, white background like a sketchbook page, fun and expressive — looks like it was drawn by hand in a notebook. just use it AS-IS.`,
+    [MODES.FLAT]: (prompt) => 
+        `A **${prompt} icon in flat minimalist style**, simple geometric shapes, clean lines, no shading or depth, solid colors with a limited palette, modern and balanced composition, no background or a soft neutral one, highly readable and optimized for UI and digital use. just use it AS-IS.`,
 }
 
 const formatPrompt = (mode: string, prompt: string): string => {
@@ -117,6 +126,13 @@ export async function POST(req: NextRequest) {
                         ContentType: 'image/png'
                     }
                     await s3.send(new PutObjectCommand(uploadParams))
+                    await db.icons.create({
+                        data: {
+                            id: account!.id,
+                            name: `${Date.now()}`,
+                            avatarKey: fileName
+                        }
+                    })
                 }
                 return NextResponse.json({
                     success: 1,

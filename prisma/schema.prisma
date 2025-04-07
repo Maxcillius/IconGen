@@ -25,6 +25,7 @@ model Account {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   bills             Order[]
+  icons             icons[]
   
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -61,9 +62,9 @@ model VerificationToken {
 
 
 model Order {
-  id             String   @id
+  id             String
   userId         Account     @relation(fields: [id], references: [id], onDelete: Cascade)
-  orderId        String   @unique
+  orderId        String      @id
   paymentId      String?
   amount         Int
   currency       String   @default("INR")
@@ -74,4 +75,11 @@ model Order {
   receipt        String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+model icons {
+  id            String
+  userId        Account       @relation(fields: [id], references: [id], onDelete: Cascade)
+  name          String
+  avatarKey     String        @id
 }
