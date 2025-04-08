@@ -1,43 +1,40 @@
-import { Shield, Mail, Globe, ChevronDown } from 'lucide-react';
+import { Shield, Mail, Globe } from 'lucide-react';
 
 export default function PrivacyPolicy() {
-
   return (
     <>
-      <div className='h-16 w-full'>
-
-      </div>
+      <div className='h-16 w-full' />
       <div className="min-h-screen bg-gray-900 text-gray-100">
         {/* Header */}
-        <header className="bg-gray-800 py-6 sticky top-0 z-10 border-b border-gray-700">
+        <header className="bg-gray-800 py-4 md:py-6 sticky top-0 z-10 border-b border-gray-700">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
               <div className="flex items-center space-x-2">
-                <Shield className="w-8 h-8 text-blue-400" />
-                <h1 className="text-2xl font-bold">Privacy Policy</h1>
+                <Shield className="w-6 h-6 md:w-8 md:h-8 text-blue-400" />
+                <h1 className="text-xl md:text-2xl font-bold">Privacy Policy</h1>
               </div>
-              <p className="text-gray-400">Effective Date: March 14, 2024</p>
+              <p className="text-sm md:text-base text-gray-400">Effective Date: March 14, 2025</p>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto space-y-12">
+        <main className="container mx-auto px-4 py-6 md:py-8">
+          <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
             {/* Introduction */}
             <section className="prose prose-invert">
-              <p className="text-xl text-gray-300">
+              <p className="text-lg md:text-xl text-gray-300">
                 We respect your privacy and are committed to protecting your personal information.
                 This Privacy Policy explains how we collect, use, and safeguard your data when you use our service.
               </p>
             </section>
 
             {/* Information Collection */}
-            <section id="information" className="space-y-4">
-              <h2 className="text-2xl font-bold text-blue-400">Information We Collect</h2>
-              <div className="bg-gray-800 rounded-lg p-6 space-y-4">
-                <h3 className="text-xl font-semibold">Information You Provide</h3>
-                <ul className="list-disc list-inside text-gray-300 space-y-2">
+            <section id="information" className="space-y-3 md:space-y-4">
+              <h2 className="text-xl md:text-2xl font-bold text-blue-400">Information We Collect</h2>
+              <div className="bg-gray-800 rounded-lg p-4 md:p-6 space-y-3 md:space-y-4">
+                <h3 className="text-lg md:text-xl font-semibold">Information You Provide</h3>
+                <ul className="list-disc list-inside text-gray-300 space-y-1.5 md:space-y-2 text-sm md:text-base">
                   <li>Account information (name, email, password)</li>
                   <li>Payment information (processed securely via third-party providers)</li>
                   <li>User-generated content and preferences</li>
@@ -46,10 +43,10 @@ export default function PrivacyPolicy() {
             </section>
 
             {/* Usage */}
-            <section id="usage" className="space-y-4">
-              <h2 className="text-2xl font-bold text-blue-400">How We Use Your Information</h2>
-              <div className="bg-gray-800 rounded-lg p-6 space-y-4">
-                <ul className="list-disc list-inside text-gray-300 space-y-2">
+            <section id="usage" className="space-y-3 md:space-y-4">
+              <h2 className="text-xl md:text-2xl font-bold text-blue-400">How We Use Your Information</h2>
+              <div className="bg-gray-800 rounded-lg p-4 md:p-6 space-y-3 md:space-y-4">
+                <ul className="list-disc list-inside text-gray-300 space-y-1.5 md:space-y-2 text-sm md:text-base">
                   <li>To provide and improve our services</li>
                   <li>To personalize your experience</li>
                   <li>To process payments and manage subscriptions</li>
@@ -60,13 +57,13 @@ export default function PrivacyPolicy() {
             </section>
 
             {/* Sharing */}
-            <section id="sharing" className="space-y-4">
-              <h2 className="text-2xl font-bold text-blue-400">Information Sharing</h2>
-              <div className="bg-gray-800 rounded-lg p-6">
-                <p className="text-gray-300">
+            <section id="sharing" className="space-y-3 md:space-y-4">
+              <h2 className="text-xl md:text-2xl font-bold text-blue-400">Information Sharing</h2>
+              <div className="bg-gray-800 rounded-lg p-4 md:p-6">
+                <p className="text-sm md:text-base text-gray-300">
                   We do not sell your personal information. We may share your information with:
                 </p>
-                <ul className="list-disc list-inside text-gray-300 mt-4 space-y-2">
+                <ul className="list-disc list-inside text-gray-300 mt-3 md:mt-4 space-y-1.5 md:space-y-2 text-sm md:text-base">
                   <li>Service providers (hosting, analytics, payment processing)</li>
                   <li>Legal authorities when required by law</li>
                 </ul>
@@ -74,13 +71,13 @@ export default function PrivacyPolicy() {
             </section>
 
             {/* Security */}
-            <section id="security" className="space-y-4">
-              <h2 className="text-2xl font-bold text-blue-400">Data Security</h2>
-              <div className="bg-gray-800 rounded-lg p-6">
-                <p className="text-gray-300">
+            <section id="security" className="space-y-3 md:space-y-4">
+              <h2 className="text-xl md:text-2xl font-bold text-blue-400">Data Security</h2>
+              <div className="bg-gray-800 rounded-lg p-4 md:p-6">
+                <p className="text-sm md:text-base text-gray-300">
                   We implement industry-standard security measures to protect your data, including:
                 </p>
-                <ul className="list-disc list-inside text-gray-300 mt-4 space-y-2">
+                <ul className="list-disc list-inside text-gray-300 mt-3 md:mt-4 space-y-1.5 md:space-y-2 text-sm md:text-base">
                   <li>Encryption in transit and at rest</li>
                   <li>Regular security audits</li>
                   <li>Access controls and authentication</li>
@@ -90,17 +87,17 @@ export default function PrivacyPolicy() {
             </section>
 
             {/* Contact */}
-            <section className="bg-gray-800 rounded-lg p-6 mt-8">
-              <h2 className="text-xl font-bold mb-4">Contact Us</h2>
-              <div className="space-y-2 text-gray-300">
+            <section className="bg-gray-800 rounded-lg p-4 md:p-6 mt-6 md:mt-8">
+              <h2 className="text-lg md:text-xl font-bold mb-3 md:mb-4">Contact Us</h2>
+              <div className="space-y-2 text-sm md:text-base text-gray-300">
                 <div className="flex items-center space-x-2">
-                  <Mail className="w-5 h-5 text-blue-400" />
+                  <Mail className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
                   <a href="mailto:support@yourdomain.com" className="hover:text-blue-400">
                     support@yourdomain.com
                   </a>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Globe className="w-5 h-5 text-blue-400" />
+                  <Globe className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
                   <a href="https://yourdomain.com" className="hover:text-blue-400">
                     yourdomain.com
                   </a>

@@ -85,9 +85,10 @@ export async function POST(req: NextRequest) {
         console.log({
             prompt: formatPrompt(mode, prompt),
             model: model,
+            n: count,
             quality: quality,
             size: size,
-            style: style
+            style: style,
         })
         const openaiRequest: ImageGenerateParams = {
             prompt: formatPrompt(mode, prompt),

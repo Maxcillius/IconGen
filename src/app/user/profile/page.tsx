@@ -1,9 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { CreditCard, Settings, User, Image, ChevronRight, LogOut, X } from "lucide-react"
+import { CreditCard, Settings, User, Images, ChevronRight, LogOut, X } from "lucide-react"
 import { redirect } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 export default function Profile() {
 
@@ -13,6 +15,8 @@ export default function Profile() {
   const [credits, setCredits] = useState("NA")
   const [show, setShow] = useState("")
   const [imageUrl, setImageUrl] = useState('');
+  const [deleting, setDeleting] = useState(false)
+  const router = useRouter()
 
   const { data: session, status } = useSession({
     required: true,
@@ -214,17 +218,22 @@ export default function Profile() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {icons && icons.map((image, index) => (
           <div
+            onClick={() => {
+              if(window.screen.width < 500) {
+                window.open("https://d2sp6678va8qfs.cloudfront.net/" + image.url, "__blank")
+              }
+            }}
             key={index}
-            className="group relative aspect-square bg-[#0D1219] rounded-2xl border border-[#1F2937] overflow-hidden"
+            className={`group relative aspect-square bg-[#0D1219] rounded-2xl border border-[#1F2937] overflow-hidden w-28 md:w-52`}
           >
-            <img src={"https://d2sp6678va8qfs.cloudfront.net/" + image.url} alt={`Media ${image.key}`} className="w-full h-full object-cover" />
+            <Image src={"https://d2sp6678va8qfs.cloudfront.net/" + image.url} width={500} height={500} alt={`Media ${image.key}`} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <div className="flex space-x-2">
-                  <button onClick={() => { setShow("https://d2sp6678va8qfs.cloudfront.net/" + image.url) }} className="flex-1 bg-white/10 backdrop-blur-sm py-2 rounded-lg text-white text-sm hover:bg-white/20 transition-colors">
+                  <button onClick={() => { setShow("https://d2sp6678va8qfs.cloudfront.net/" + image.url) }} className={`md:block hidden flex-1 bg-white/10 backdrop-blur-sm py-2 rounded-lg text-white text-sm hover:bg-white/20 transition-colors`}>
                     View
                   </button>
-                  <button onClick={() => {handleDownload("https://d2sp6678va8qfs.cloudfront.net/" + image.url)}} className="flex-1 bg-white/10 backdrop-blur-sm py-2 rounded-lg text-white text-sm hover:bg-white/20 transition-colors">
+                  <button onClick={() => {handleDownload("https://d2sp6678va8qfs.cloudfront.net/" + image.url)}} className={`md:block hidden flex-1 bg-white/10 backdrop-blur-sm py-2 rounded-lg text-white text-sm hover:bg-white/20 transition-colors`}>
                     Download
                   </button>
                 </div>
@@ -236,9 +245,45 @@ export default function Profile() {
     </>
   )
 
+  const renderSettings = () => (
+    <>
+      <h1 className="text-lg lg:text-3xl font-bold text-white mb-8">Account Settings</h1>
+      <div className="space-y-6">
+        <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
+          <h3 className="text-md lg:text-lg font-semibold text-white mb-4">Danger Zone</h3>
+          <p className="text-gray-400 mb-4 text-sm lg:text-base">Once you delete your account, there is no going back.</p>
+          <button onClick={async () => {
+            setDeleting(true)
+            await fetch("/api/user/delete", 
+              {
+                method: "GET",
+                headers: 
+                {
+                  "Content-Type": "application/json"
+                }
+              }
+            ).then((response) => response.json()).then((data) => {
+              if(data.success === 0) {
+                return
+              }
+              setDeleting(false)
+            })
+            location.reload()
+          }} className="flex flex-row gap-5 text-xs lg:text-base px-6 py-3 bg-red-500/10 text-red-400 rounded-xl font-medium hover:bg-red-500/20 transition-colors">
+            {
+              deleting &&
+              <div className="w-6 h-6 border-red-100 border-2 border-r-transparent animate-spin rounded-full"></div>
+            }
+            Delete Account
+          </button>
+        </div>
+      </div>
+    </>
+);
+
   const sections = [
     { id: "profile", icon: User, label: "Profile", component: renderProfile },
-    { id: "media", icon: Image, label: "Media", component: renderMedia },
+    { id: "media", icon: Images, label: "Media", component: renderMedia },
     { id: "billing", icon: CreditCard, label: "Billing", component: renderBilling },
     // { id: "security", icon: Shield, label: "Security", component: renderSecurity },
     { id: "settings", icon: Settings, label: "Settings", component: renderSettings },
@@ -290,19 +335,3 @@ export default function Profile() {
     </div>
   )
 }
-
-
-const renderSettings = () => (
-  <>
-    <h1 className="text-lg lg:text-3xl font-bold text-white mb-8">Account Settings</h1>
-    <div className="space-y-6">
-      <div className="bg-[#0D1219] rounded-2xl border border-[#1F2937] p-6">
-        <h3 className="text-md lg:text-lg font-semibold text-white mb-4">Danger Zone</h3>
-        <p className="text-gray-400 mb-4 text-sm lg:text-base">Once you delete your account, there is no going back.</p>
-        <button className="text-xs lg:text-base px-6 py-3 bg-red-500/10 text-red-400 rounded-xl font-medium hover:bg-red-500/20 transition-colors">
-          Delete Account
-        </button>
-      </div>
-    </div>
-  </>
-);

@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com"
+      },
+      {
+        protocol: "https",
+        hostname: "d2sp6678va8qfs.cloudfront.net"
       }
     ],
   },

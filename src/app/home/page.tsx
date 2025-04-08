@@ -53,8 +53,9 @@ export default function Home() {
     const setVisibility = useDispatch()
 
     const generateIcon = async () => {
+        
         if (window.screen.width < 500) {
-            window.scrollTo({ top: 550, behavior: "smooth" })
+            window.scrollTo({ top: 1000, behavior: "smooth" })
         }
         if (!session) {
             setVisibility(setPopupState())
@@ -100,7 +101,7 @@ export default function Home() {
         <>
             {show && (
                 <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 pt-[5rem]">
-                    <div className="relative max-w-4xl w-full bg-white rounded-xl overflow-hidden">
+                    <div className="relative max-w-4xl bg-white rounded-xl overflow-hidden">
                         <button
                             onClick={() => { setShow("") }}
                             className="absolute top-4 right-4 bg-opacity-50 rounded-full p-2 hover:bg-opacity-75 transition-opacity"
@@ -209,14 +210,14 @@ export default function Home() {
                                                         Preview
                                                     </h2>
                                                 </div>
-                                                <div className="relative bg-[#0A0F16] rounded-xl border border-[#1F2937] p-4 lg:p-8 flex items-center justify-center">
+                                                <div className="relative bg-[#0A0F16] rounded-xl border border-[#1F2937] p-4 lg:p-8 flex items-center justify-center h-contain">
                                                     {
                                                         generating &&
                                                         <div className="w-12 h-12 rounded-full border-blue-500 border-2 border-t-transparent animate-spin"></div>
                                                     }
                                                     {!generating &&
                                                         imageLink && imageLink.length > 0 ? (
-                                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
+                                                        <div className={`w-full grid grid-cols-1 lg:grid-cols-3 gap-4`}>
                                                             {imageLink.map((img: { url: string }, index) => (
                                                                 <div onClick={() => { setShow(img.url) }} key={index} className="relative w-full h-32 lg:h-48 hover:cursor-pointer">
                                                                     <Image
@@ -321,7 +322,6 @@ export default function Home() {
                                                                     min={1}
                                                                     max={10}
                                                                     type="number"
-                                                                    onClick={() => setCount(1)}
                                                                     className="appreance-none w-full py-2 px-4 text-xs lg:text-base rounded-md focus:outline-none capitalize bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
                                                                 >
                                                                 </input>

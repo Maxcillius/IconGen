@@ -1,8 +1,15 @@
 "use client"
 
 import React, { useState, useEffect } from "react";
-import { XIcon as Icons, Palette, Wand2, Zap, Code2, ArrowRight, Sparkles, Image, Download } from "lucide-react";
+import { XIcon as Icons, Palette, Wand2, Zap, Code2, ArrowRight, Sparkles, Images, Download } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+import skull from "@/images/Home/skull.png"
+import bonsai from "@/images/Home/bonsai.png"
+import cart from "@/images/Home/cart.png"
+import building from "@/images/Home/building.png"
+import female from "@/images/Home/female.png"
+import cat from "@/images/Home/cat.png"
 
 function TypewriterText({ text }: { text: string }) {
   const [displayText, setDisplayText] = useState("");
@@ -57,6 +64,51 @@ export default function App() {
           </div>
         </header>
 
+                {/* Showcase Section */}
+                <section className="py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <div className="flex justify-center mb-6">
+                <Sparkles className="h-12 w-12 text-indigo-500" />
+              </div>
+              <h2 className="text-4xl font-bold text-white mb-4">Create Icons That Stand Out</h2>
+              <p className="text-sm px-10 lg:px-0 lg:text-xl text-slate-400">Explore what you can create with our platform</p>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="group relative bg-slate-800 rounded-xl overflow-hidden">
+                  <div className="aspect-square bg-slate-700 flex items-center justify-center">
+                    <Image src={skull} alt="skull" width={500} height={500} className="w-full text-indigo-500" />
+                  </div>
+                </div>
+                <div className="group relative bg-slate-800 rounded-xl overflow-hidden">
+                  <div className="aspect-square bg-slate-700 flex items-center justify-center">
+                    <Image src={cart} alt="cart" width={500} height={500} className="w-full text-indigo-500" />
+                  </div>
+                </div>
+                <div className="group relative bg-slate-800 rounded-xl overflow-hidden">
+                  <div className="aspect-square bg-slate-700 flex items-center justify-center">
+                    <Image src={cat} alt="cat" width={500} height={500} className="w-full text-indigo-500" />
+                  </div>
+                </div>
+                <div className="group relative bg-slate-800 rounded-xl overflow-hidden">
+                  <div className="aspect-square bg-slate-700 flex items-center justify-center">
+                    <Image src={building} alt="building" width={500} height={500} className="w-full text-indigo-500" />
+                  </div>
+                </div>
+                <div className="group relative bg-slate-800 rounded-xl overflow-hidden">
+                  <div className="aspect-square bg-slate-700 flex items-center justify-center">
+                    <Image src={bonsai} alt="bonsai" width={500} height={500} className="w-full text-indigo-500" />
+                  </div>
+                </div>
+                <div className="group relative bg-slate-800 rounded-xl overflow-hidden">
+                  <div className="aspect-square bg-slate-700 flex items-center justify-center">
+                    <Image src={female} alt="female" width={500} height={500} className="w-full text-indigo-500" />
+                  </div>
+                </div>
+            </div>
+          </div>
+        </section>
+
         {/* Features Section */}
         <section className="py-20 bg-slate-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -82,30 +134,6 @@ export default function App() {
                 <h3 className="text-md lg:text-xl font-semibold text-white mb-3">Developer Friendly</h3>
                 <p className="text-slate-300 text-sm lg:text-base">Export icons in multiple formats with ready-to-use code snippets.</p>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Showcase Section */}
-        <section className="py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <div className="flex justify-center mb-6">
-                <Sparkles className="h-12 w-12 text-indigo-500" />
-              </div>
-              <h2 className="text-4xl font-bold text-white mb-4">Create Icons That Stand Out</h2>
-              <p className="text-sm px-10 lg:px-0 lg:text-xl text-slate-400">Explore what you can create with our platform</p>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[...Array(6)].map((_, index) => (
-                <div key={index} className="group relative bg-slate-800 rounded-xl overflow-hidden">
-                  <div className="aspect-square bg-slate-700 flex items-center justify-center">
-                    {index % 3 === 0 && <Image className="h-24 w-24 text-indigo-500" />}
-                    {index % 3 === 1 && <Download className="h-24 w-24 text-indigo-500" />}
-                    {index % 3 === 2 && <Zap className="h-24 w-24 text-indigo-500" />}
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>
