@@ -6,7 +6,6 @@ import { useSession } from 'next-auth/react';
 import { useDispatch } from 'react-redux';
 import RazorpayPayment from '@/components/razorPay';
 import { setPopupState } from "@/state/popup/popup";
-import AuthPopup from '@/components/Authpopup';
 
 export default function Checkout() {
   const [name, setName] = useState("");
@@ -108,6 +107,7 @@ export default function Checkout() {
   const transaction = () => {
     if(!session || !session.user) {
       setVisibility(setPopupState())
+      return
     }
     if (!name || !email || !phone || !street || !apartment || !city || !state || !zipcode) {
       setEmpty(true)
