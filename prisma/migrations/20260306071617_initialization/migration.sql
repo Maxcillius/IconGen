@@ -68,6 +68,15 @@ CREATE TABLE "Order" (
     CONSTRAINT "Order_pkey" PRIMARY KEY ("orderId")
 );
 
+-- CreateTable
+CREATE TABLE "icons" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "avatarKey" TEXT NOT NULL,
+
+    CONSTRAINT "icons_pkey" PRIMARY KEY ("avatarKey")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provider", "providerAccountId");
 
@@ -91,3 +100,6 @@ ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId"
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_id_fkey" FOREIGN KEY ("id") REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "icons" ADD CONSTRAINT "icons_id_fkey" FOREIGN KEY ("id") REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE;

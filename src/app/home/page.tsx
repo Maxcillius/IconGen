@@ -18,7 +18,6 @@ import Styles from "@/components/Styles";
 // import SubscriptionPopup from "@/components/SubscriptionPopup";
 
 export default function Home() {
-    const [quality, setQuality] = useState("standard")
     const [dimension, setDimension] = useState("small")
     const [count, setCount] = useState(1)
     const [prompt, setPrompt] = useState("")
@@ -75,9 +74,7 @@ export default function Home() {
                         prompt: prompt,
                         mode: mode,
                         model: model,
-                        quality: quality,
                         size: model === "dall-e-3" ? dall3[dimension] : dall2[dimension],
-                        style: "vivid",
                         count: count
                     })
                 }
@@ -253,59 +250,24 @@ export default function Home() {
                                                 Settings
                                             </h2>
                                             <div className="space-y-6">
-                                                {/* Quality Setting */}
-                                                <div className="relative">
-                                                    <label className="text-gray-400 text-sm font-medium mb-2 block">Quality</label>
-                                                    <div className="grid grid-cols-2 gap-2 bg-[#0A0F16] p-1 rounded-lg">
-                                                        <button
-                                                            onClick={() => setQuality("standard")}
-                                                            className={`py-2 px-4 text-xs lg:text-base rounded-md transition-all duration-300 ${quality === "standard"
-                                                                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                : "text-gray-400 hover:text-white"
-                                                                }`}
-                                                        >
-                                                            Standard
-                                                        </button>
-                                                        <div className="relative">
-                                                            <button
-                                                                onClick={() => {
-                                                                    setQuality("hd")
-                                                                    setDimension("medium")
-                                                                    setModel("dall-e-3")
-                                                                }}
-                                                                className={`w-full py-2 px-4 text-xs lg:text-base rounded-md transition-all duration-300 ${quality === "hd"
-                                                                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                    : "text-gray-400 hover:text-white"
-                                                                    }`}
-                                                            >
-                                                                HD
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
                                                 {/* Dimension Setting */}
                                                 <div className="relative">
                                                     <label className="text-gray-400 text-sm font-medium mb-2 block">Dimension</label>
                                                     <div className="grid grid-cols-3 gap-2 bg-[#0A0F16] p-1 rounded-lg">
                                                         {["small", "medium", "large"].map((size, index) => {
-                                                            if ((quality === "hd" || model === "dall-e-3") && size === "small") {
-                                                                return null
-                                                            } else {
-                                                                return (
-                                                                    <div key={size} className="relative w-full">
-                                                                        <button
-                                                                            onClick={() => setDimension(size)}
-                                                                            className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${dimension === size
-                                                                                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                                : "text-gray-400 hover:text-white"
-                                                                                }`}
-                                                                        >
-                                                                            {size}
-                                                                        </button>
-                                                                    </div>
-                                                                )
-                                                            }
+                                                            return (
+                                                                <div key={size} className="relative w-full">
+                                                                    <button
+                                                                        onClick={() => setDimension(size)}
+                                                                        className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${dimension === size
+                                                                            ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
+                                                                            : "text-gray-400 hover:text-white"
+                                                                            }`}
+                                                                    >
+                                                                        {size}
+                                                                    </button>
+                                                                </div>
+                                                            )
                                                         })}
                                                     </div>
                                                 </div>
@@ -332,7 +294,7 @@ export default function Home() {
                                                         <div className="relative w-full">
                                                             <button
                                                                 onClick={() => {
-                                                                    if (quality !== "hd") setModel("dall-e-2")
+                                                                    setModel("dall-e-2")
                                                                 }}
                                                                 className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${model === "dall-e-2"
                                                                     ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"

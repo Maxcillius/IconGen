@@ -61,7 +61,7 @@ const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({ amount, name, email, 
                 },
                 body: JSON.stringify({
                     amount,
-                    receipt: `receipt_${email}_${name}_${Date.now()}`,
+                    receipt: `rcpt_${Date.now()}`,
                 }),
             })
             const data = await response.json()
@@ -77,7 +77,7 @@ const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({ amount, name, email, 
                 order_id: data.order.id,
                 prefill: { name, email, contact },
                 notes: {
-                    address: 'Your Company Address',
+                    address: 'Raipur',
                 },
                 theme: {
                     color: '#3399cc',

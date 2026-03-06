@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-Deployment
+  labels:
+    app: icongen
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: icongen
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: icongen
+        tier: backend
+    spec:
+      containers:
+      - name: nodejs-server
+        image: maxcillius/icongen-nodejs:latest
+        ports:
+        - containerPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-Deployment
+  lables:
+    app: icongen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: icongen
+  template:
+    metadat:
+      labels:
+        app: icongen
+    spec:
+      containers:
+      - name: nginx-server
+        image: maxcillius/icongen-nginx:latest
+        ports:
+        - containerPort: 80
+    

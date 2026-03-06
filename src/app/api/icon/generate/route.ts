@@ -12,7 +12,7 @@ const openai = new OpenAI();
 
 const MODES = {
     STICKER: 'Sticker',
-    PIXEL: 'Pixel',
+    PIXEL: 'Pixel', 
     VECTOR: 'Vector',
     CLAY: 'Clay',
     DOODLE: 'Doodle',
@@ -42,7 +42,7 @@ const formatPrompt = (mode: string, prompt: string): string => {
 
 export async function POST(req: NextRequest) {
     try {
-        const { prompt, model, quality, size, style, mode, count } = await req.json()
+        const { prompt, model, size, mode, count } = await req.json()
         const session = await getServerSession(authOptions)
         if(!session) {
             return NextResponse.json({
@@ -86,17 +86,13 @@ export async function POST(req: NextRequest) {
             prompt: formatPrompt(mode, prompt),
             model: model,
             n: count,
-            quality: quality,
             size: size,
-            style: style,
         })
         const openaiRequest: ImageGenerateParams = {
             prompt: formatPrompt(mode, prompt),
             model: model,
             n: count,
-            quality: quality,
             size: size,
-            style: style,
         }
         try {
             const image = await openai.images.generate(openaiRequest)

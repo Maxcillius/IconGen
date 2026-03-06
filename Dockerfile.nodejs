@@ -1,0 +1,14 @@
+FROM node:20
+
+RUN mkdir icongen
+WORKDIR /icongen
+
+COPY package*.json ./
+COPY prisma ./
+RUN npm install
+
+COPY . ./
+RUN npm run build
+
+EXPOSE 3000
+CMD ["npm", "start"]

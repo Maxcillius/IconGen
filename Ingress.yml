@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingres
+metadata:
+  name: icongen-ingress
+  labels:
+    app: icongen
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /    
+spec:
+  rules:
+  - host: icongen.example.com
+    http:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-Service
+            port:
+              number: 80
+    tls:
+    - hosts:
+      - icongen.example.com
+      serviceName: icongen-tls
