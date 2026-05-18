@@ -319,13 +319,9 @@ export default function Home() {
                                     <div>
                                         <h3 className="text-sm lg:text-xl font-semibold mb-3 text-white">How does the token pricing work?</h3>
                                         <div className="space-y-2 text-gray-300 text-sm lg:text-base">
-                                            <p>Our pricing is based on the DALL-E model you choose:</p>
-                                            <ul className="list-disc list-inside ml-4 space-y-2 text-xs lg:text-base">
-                                                <li>DALL-E 2: 1 token per image generation</li>
-                                                <li>DALL-E 3: 2 tokens per image generation</li>
-                                            </ul>
+                                            <p>Our pricing is simple. 2 tokens per image generation:</p>
                                             <p className="mt-3 bg-gray-700 p-3 rounded text-xs lg:text-base">
-                                                <strong>Note:</strong> Final cost = Number of tokens × Number of images generated
+                                                <strong>Note:</strong> Final cost = 2 × Number of images generated
                                             </p>
                                         </div>
                                     </div>
@@ -339,26 +335,13 @@ export default function Home() {
                                     <div>
                                         <h3 className="text-sm lg:text-xl font-semibold mb-3 text-white">What about the Style Library images?</h3>
                                         <p className="text-gray-300 text-xs lg:text-base">
-                                            All images showcased in our Style Library section are generated using DALL-E 3 with HD parameters enabled,
+                                            All images showcased in our Style Library section are generated using our image generation,
                                             ensuring the highest quality and most detailed results possible.
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Quality FAQ */}
-                            <div className="bg-gray-800 rounded-lg p-6 shadow-xl border border-gray-700">
-                                <div className="flex items-start gap-4">
-                                    <Sparkles className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
-                                    <div>
-                                        <h3 className="text-sm lg:text-xl font-semibold mb-3 text-white">Which model should I choose?</h3>
-                                        <p className="text-gray-300 text-xs lg:text-base">
-                                            While DALL-E 2 is more cost-effective, DALL-E 3 provides superior image quality and better understands complex prompts.
-                                            For professional or detailed work, we recommend using DALL-E 3 with HD parameters.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
 
                             {/* Help FAQ */}
                             <div className="bg-gray-800 rounded-lg p-6 shadow-xl border border-gray-700">
