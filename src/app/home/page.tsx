@@ -1,6 +1,5 @@
 "use client"
 
-import { dall2, dall3 } from "../../interfaces/dimensions"
 import { useState } from "react"
 import { Download, Trash2, Info, Sparkles, X, Coins, HelpCircle, Images } from "lucide-react";
 import { useDispatch } from "react-redux";
@@ -15,7 +14,6 @@ import Doodle from "@/images/doodle.png"
 import Flat from "@/images/flat.png"
 import { StaticImageData } from "next/image"
 import Styles from "@/components/Styles";
-// import SubscriptionPopup from "@/components/SubscriptionPopup";
 
 export default function Home() {
     const [dimension, setDimension] = useState("small")
@@ -23,12 +21,10 @@ export default function Home() {
     const [prompt, setPrompt] = useState("")
     const [error, setError] = useState("")
     const [imageLink, setImageLink] = useState<{ url: string }[]>([])
-    // const [subspopup, setSubspopup] = useState(false)
     const [generating, setGenerating] = useState(false)
     const [model, setModel] = useState("dall-e-2")
     const [mode, setMode] = useState("Pixel")
     const [show, setShow] = useState("")
-    // const [subscription, setSubscription] = useState(-1)
 
     const modeImages: Record<string, StaticImageData> = {
         "Sticker": Sticker,
@@ -73,8 +69,7 @@ export default function Home() {
                     body: JSON.stringify({
                         prompt: prompt,
                         mode: mode,
-                        model: model,
-                        size: model === "dall-e-3" ? dall3[dimension] : dall2[dimension],
+                        size: "1024x1024",
                         count: count
                     })
                 }
@@ -288,32 +283,6 @@ export default function Home() {
                                                                 >
                                                                 </input>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="grid grid-cols-2 gap-2 bg-[#0A0F16] p-1 rounded-lg">
-                                                        <div className="relative w-full">
-                                                            <button
-                                                                onClick={() => {
-                                                                    setModel("dall-e-2")
-                                                                }}
-                                                                className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${model === "dall-e-2"
-                                                                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                    : "text-gray-400 hover:text-white"
-                                                                    }`}
-                                                            >
-                                                                Dall-e-2
-                                                            </button>
-                                                        </div>
-                                                        <div className="relative w-full">
-                                                            <button
-                                                                onClick={() => setModel("dall-e-3")}
-                                                                className={`w-full py-2 px-4 text-xs lg:text-base rounded-md capitalize transition-all duration-300 ${model === "dall-e-3"
-                                                                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/20"
-                                                                    : "text-gray-400 hover:text-white"
-                                                                    }`}
-                                                            >
-                                                                Dall-e-3
-                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
