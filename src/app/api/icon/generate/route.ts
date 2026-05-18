@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server"
 import OpenAI from "openai"
 import { ImageGenerateParams } from "openai/resources/images.mjs";
 import db from "@/db/db";
-import axios from "axios";
 import s3 from "@/lib/s3"
 import { PutObjectCommand } from "@aws-sdk/client-s3"
 import { getServerSession } from "next-auth";
@@ -42,7 +41,8 @@ const formatPrompt = (mode: string, prompt: string): string => {
 
 export async function POST(req: NextRequest) {
     try {
-        const { prompt, model, size, mode, count } = await req.json()
+        const { prompt, size, mode, count } = await req.json()
+        const model = "gpt-image-2"
         const session = await getServerSession(authOptions)
         if(!session) {
             return NextResponse.json({
@@ -64,23 +64,15 @@ export async function POST(req: NextRequest) {
                 msg: "No account found"
             })
         }
-        const cost = count * ( model === "dall-e-2" ? 1 : 2)
-        if(userAccount && userAccount.credits < cost) {
-            return NextResponse.json({
-                success: 0,
-                msg: "Insufficient funds"
-            },
-            {
-                status: 409
-            })
-        }
-        // if(userAccount) {
-        //     if(userAccount.subscription < 1 && (model === "dall-e-3" || quality === "hd" || count > 1 || mode !== "" || size !== "512x512")) {
-        //         return NextResponse.json({
-        //             success: 1,
-        //             msg: "Upgrade your plan"
-        //         })
-        //     }
+        const cost = count * 2
+        // if(userAccount && userAccount.credits < cost) {
+        //     return NextResponse.json({
+        //         success: 0,
+        //         msg: "Insufficient funds"
+        //     },
+        //     {
+        //         status: 409
+        //     })
         // }
         console.log({
             prompt: formatPrompt(mode, prompt),
@@ -95,7 +87,7 @@ export async function POST(req: NextRequest) {
             size: size,
         }
         try {
-            const image = await openai.images.generate(openaiRequest)
+            const image: OpenAI.ImagesResponse = await openai.images.generate(openaiRequest)
             if(image) {
                 console.log(image)
                 const account = await db.account.findFirst({
@@ -112,9 +104,8 @@ export async function POST(req: NextRequest) {
                     }
                 })
                 for(const i in image.data) {
-                    const imageUrl = image.data[i].url as string
-                    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' })
-                    const buffer = Buffer.from(response.data, 'binary')
+                    const image_base64 = image.data[i].b64_json as string
+                    const buffer = Buffer.from(image_base64, "base64")
                     const fileName = `userIcons/${session.user.id}/icon-${Date.now()}-${i}.png`
                     const uploadParams = {
                         Bucket: process.env.BUCKET_NAME,

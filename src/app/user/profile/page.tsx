@@ -220,20 +220,20 @@ export default function Profile() {
           <div
             onClick={() => {
               if(window.screen.width < 500) {
-                window.open("https://d2sp6678va8qfs.cloudfront.net/" + image.url, "__blank")
+                window.open("https://dyudy89jpna4c.cloudfront.net/" + image.url, "__blank")
               }
             }}
             key={index}
             className={`group relative aspect-square bg-[#0D1219] rounded-2xl border border-[#1F2937] overflow-hidden w-28 md:w-52`}
           >
-            <Image src={"https://d2sp6678va8qfs.cloudfront.net/" + image.url} width={500} height={500} alt={`Media ${image.key}`} className="w-full h-full object-cover" />
+            <Image src={"https://dyudy89jpna4c.cloudfront.net/" + image.url} width={500} height={500} alt={`Media ${image.key}`} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <div className="flex space-x-2">
-                  <button onClick={() => { setShow("https://d2sp6678va8qfs.cloudfront.net/" + image.url) }} className={`md:block hidden flex-1 bg-white/10 backdrop-blur-sm py-2 rounded-lg text-white text-sm hover:bg-white/20 transition-colors`}>
+                  <button onClick={() => { setShow("https://dyudy89jpna4c.cloudfront.net/" + image.url) }} className={`md:block hidden flex-1 bg-white/10 backdrop-blur-sm py-2 rounded-lg text-white text-sm hover:bg-white/20 transition-colors`}>
                     View
                   </button>
-                  <button onClick={() => {handleDownload("https://d2sp6678va8qfs.cloudfront.net/" + image.url)}} className={`md:block hidden flex-1 bg-white/10 backdrop-blur-sm py-2 rounded-lg text-white text-sm hover:bg-white/20 transition-colors`}>
+                  <button onClick={() => {handleDownload("https://dyudy89jpna4c.cloudfront.net/" + image.url)}} className={`md:block hidden flex-1 bg-white/10 backdrop-blur-sm py-2 rounded-lg text-white text-sm hover:bg-white/20 transition-colors`}>
                     Download
                   </button>
                 </div>
