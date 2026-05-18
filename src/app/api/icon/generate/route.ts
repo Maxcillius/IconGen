@@ -65,15 +65,15 @@ export async function POST(req: NextRequest) {
             })
         }
         const cost = count * 2
-        // if(userAccount && userAccount.credits < cost) {
-        //     return NextResponse.json({
-        //         success: 0,
-        //         msg: "Insufficient funds"
-        //     },
-        //     {
-        //         status: 409
-        //     })
-        // }
+        if(userAccount && userAccount.credits < cost) {
+            return NextResponse.json({
+                success: 0,
+                msg: "Insufficient funds"
+            },
+            {
+                status: 409
+            })
+        }
         console.log({
             prompt: formatPrompt(mode, prompt),
             model: model,
